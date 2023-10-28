@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@font-face {
+    font-family: 'MP_Regular';
+    src: url('../assets/fonts/MavenPro/MavenPro-Regular.ttf');
+}
+@font-face {
+    font-family: 'MP_Medium';
+    src: url('../assets/fonts/MavenPro/MavenPro-Medium.ttf');
+}
+@font-face {
+    font-family: 'MP_Bold';
+    src: url('../assets/fonts/MavenPro/MavenPro-Bold.ttf');
+}
