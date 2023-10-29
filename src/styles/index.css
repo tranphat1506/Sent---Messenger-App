@@ -13,3 +13,7 @@
     font-family: 'NunitoBold';
     src: url('../assets/fonts/Nunito/Nunito-Bold.ttf');
 }
+@font-face {
+    font-family: 'NunitoBlack';
+    src: url('../assets/fonts/Nunito/Nunito-ExtraBold.ttf');
+}

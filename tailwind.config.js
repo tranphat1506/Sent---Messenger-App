@@ -7,8 +7,12 @@ export default {
                 NunitoRegular: ['NunitoRegular', 'sans-serif'],
                 NunitoMedium: ['NunitoMedium', 'sans-serif'],
                 NunitoBold: ['NunitoBold', 'sans-serif'],
+                NunitoBlack: ['NunitoBlack', 'sans-serif'],
             },
-            colors: {},
+            colors: {
+                skyBlue: '#35C1F1',
+                grayMain: '#0000008a',
+            },
         },
     },
     plugins: [],
