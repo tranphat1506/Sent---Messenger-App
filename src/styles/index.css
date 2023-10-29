@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 @font-face {
-    font-family: 'MP_Regular';
-    src: url('../assets/fonts/MavenPro/MavenPro-Regular.ttf');
+    font-family: 'NunitoRegular';
+    src: url('../assets/fonts/Nunito/Nunito-Regular.ttf');
 }
 @font-face {
-    font-family: 'MP_Medium';
-    src: url('../assets/fonts/MavenPro/MavenPro-Medium.ttf');
+    font-family: 'NunitoMedium';
+    src: url('../assets/fonts/Nunito/Nunito-Medium.ttf');
 }
 @font-face {
-    font-family: 'MP_Bold';
-    src: url('../assets/fonts/MavenPro/MavenPro-Bold.ttf');
+    font-family: 'NunitoBold';
+    src: url('../assets/fonts/Nunito/Nunito-Bold.ttf');
 }

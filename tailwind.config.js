@@ -4,10 +4,11 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                MP_Regular: ['MP_Regular', 'sans-serif'],
-                MP_Medium: ['MP_Medium', 'sans-serif'],
-                MP_Bold: ['MP_Bold', 'sans-serif'],
+                NunitoRegular: ['NunitoRegular', 'sans-serif'],
+                NunitoMedium: ['NunitoMedium', 'sans-serif'],
+                NunitoBold: ['NunitoBold', 'sans-serif'],
             },
+            colors: {},
         },
     },
     plugins: [],
