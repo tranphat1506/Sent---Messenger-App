@@ -41,7 +41,7 @@ const MiddleNav: React.FC<MiddleNavProps> = ({
                         className={clsx(
                             'inline-flex items-center justify-center rounded-md text-3xl p-2 w-[100px]',
                             {
-                                'text-[#444] hover:bg-[#00000020]':
+                                'text-[#444] hover:bg-[#00000020] dark:text-[#888888] dark:hover:bg-[#444444]':
                                     !isCurrentPage,
                                 'text-sky-500': isCurrentPage,
                             },

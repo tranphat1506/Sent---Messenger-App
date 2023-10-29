@@ -5,7 +5,7 @@ import path from 'path';
 export default defineConfig({
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'), // alias as @
+            '@': path.resolve(__dirname, './'), // alias as @
         },
     },
     server: {

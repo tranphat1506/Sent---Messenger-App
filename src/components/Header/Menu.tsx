@@ -11,7 +11,7 @@ const Menu = () => {
                 },
             }}
         >
-            <button className="rounded-full bg-[#00000008] hover:bg-[#00000020] active:scale-95 text-2xl text-[#444] p-2">
+            <button className="rounded-full dark:text-[#888888] dark:hover:bg-[#444444] dark:bg-[#1E1E1E] bg-[#00000008] hover:bg-[#00000020] active:scale-95 text-2xl text-[#444] p-2">
                 <BiCategory />
             </button>
         </Tooltip>

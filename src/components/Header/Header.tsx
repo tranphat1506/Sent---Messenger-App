@@ -1,6 +1,4 @@
-import clsx from 'clsx';
 import LogoIcon from '../Common/LogoIcon';
-
 import Menu from './Menu';
 import More from './More';
 import Messenger from './Messenger';
@@ -10,6 +8,7 @@ import { BiHomeAlt2, BiSolidHomeAlt2 } from 'react-icons/bi';
 import { PiUsersBold, PiUsersFill } from 'react-icons/pi';
 import { BsMusicPlayer, BsMusicPlayerFill } from 'react-icons/bs';
 import MiddleNav, { MiddleNavProps } from './MiddleNav';
+import Container from '../Common/Container';
 const MiddleNavApi: MiddleNavProps[] = [
     {
         name: 'Trang chủ',
@@ -35,25 +34,25 @@ const Header: React.FC<HeaderProps> = (props) => {
     return (
         <div
             id="header"
-            className={clsx('relative shadow-md py-2 md:py-1 max-[480px]:py-3')}
+            className="relative shadow-md py-2 max-[480px]:py-3 dark:bg-[#222]"
         >
-            <div className="px-4 lg:px-8 w-full flex flex-nowrap justify-between">
+            <Container className="flex flex-nowrap justify-between px-4 lg:px-8 ">
                 <div className="z-10 inline-flex items-center">
                     <LogoIcon className="max-[480px]:!hidden" />
                     <More />
                 </div>
                 <div className="z-10 inline-flex items-center gap-4">
                     <Menu />
-                    <Notification />
-                    <Messenger />
+                    <Notification notiCount={10} />
+                    <Messenger on={true} />
                     <UserButton />
                 </div>
-            </div>
-            <div className="hidden lg:flex absolute top-0 left-0 mx-auto w-full h-full flex-nowrap justify-center items-center gap-4">
+            </Container>
+            <Container className="!max-w-none flex-nowrap justify-center items-center gap-4 h-full hidden lg:flex absolute top-0 left-0">
                 {MiddleNavApi.map((nav, index) => {
                     return <MiddleNav {...nav} key={index} />;
                 })}
-            </div>
+            </Container>
         </div>
     );
 };

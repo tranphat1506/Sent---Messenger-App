@@ -11,7 +11,7 @@ const More = () => {
             }}
             className="lg:!hidden !block"
         >
-            <IconButton className="!rounded-md">
+            <IconButton className="!rounded-md dark:text-[#888888]">
                 <HiMenu />
             </IconButton>
         </Tooltip>
