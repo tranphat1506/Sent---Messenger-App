@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = (props) => {
     return (
         <div
             id="header"
-            className="relative shadow-md py-2 max-[480px]:py-3 dark:bg-[#222]"
+            className="fixed z-100 w-full shadow-sm h-[80px] flex items-center dark:bg-[#222] border-b-[1px] dark:border-[#555]"
         >
             <Container className="flex flex-nowrap justify-between px-4 lg:px-8 ">
                 <div className="z-10 inline-flex items-center">
