@@ -1,0 +1,41 @@
+{
+    "first": [
+        {
+            "isMessageTime": true,
+            "time": 1698006906881
+        },
+        {
+            "isMyMessage": false,
+            "time": 1698006906881,
+            "message": "Test 1",
+            "state": {
+                "status": "seen",
+                "seenList": ["1", "2"]
+            }
+        },
+        {
+            "isMyMessage": false,
+            "time": 1698006906881,
+            "message": "Test 2"
+        },
+        {
+            "isMyMessage": false,
+            "isEndText": true,
+            "time": 1698006906881,
+            "message": "Test 3",
+            "state": {
+                "status": "seen",
+                "seenList": ["1", "2"]
+            }
+        },
+        {
+            "isMyMessage": true,
+            "time": 1698006906881,
+            "message": "Test",
+            "state": {
+                "status": "seen",
+                "seenList": ["1", "2"]
+            }
+        }
+    ]
+}

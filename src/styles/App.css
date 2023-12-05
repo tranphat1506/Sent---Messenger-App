@@ -1,5 +1,89 @@
+/* width */
+.dark ::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+.dark ::-webkit-scrollbar-track {
+    background: #999;
+    border-radius: 6px;
+}
+
+/* Handle */
+.dark ::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #d7d7d7;
+    border-radius: 6px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #959595;
+    border-radius: 5px;
+    cursor: grab;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #979797;
+}
+
 html,
 body {
     font-family: 'NunitoRegular';
     font-size: 16px;
+}
+.left-message:hover .setting-message {
+    visibility: visible;
+}
+
+.message-group:not(.my-text) .message:first-of-type {
+    border-top-left-radius: 1.5rem !important;
+    border-bottom-left-radius: 0.25rem !important;
+}
+.message-group:not(.my-text) .message:last-of-type {
+    border-top-left-radius: 0.25rem !important;
+    border-bottom-left-radius: 1.5rem !important;
+}
+.message-group:not(.my-text) .message {
+    border-radius: 1.5rem;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.message-group.my-text .message {
+    border-radius: 1.5rem;
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.message-group.my-text .message:first-of-type {
+    border-top-right-radius: 1.5rem;
+}
+.message-group.my-text .message:last-of-type {
+    border-bottom-right-radius: 1.5rem;
+}
+
+.message-group.my-text .status-icon,
+.message-group:not(.my-text) .status-icon {
+    display: none;
+}
+
+.message-group.my-text .status-icon:last-of-type {
+    display: block;
 }

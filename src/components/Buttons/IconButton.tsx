@@ -29,8 +29,8 @@ const IconButton: React.FC<IconButtonProps> = ({
         >
             <button
                 className={clsx(
-                    className,
                     'rounded-full dark:text-[#888888] dark:hover:bg-[#444444] dark:bg-[#1E1E1E] bg-[#00000008] hover:bg-[#00000020] active:scale-95 text-2xl text-[#444] p-2',
+                    className,
                 )}
                 onClick={onClick}
             >
