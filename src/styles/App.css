@@ -52,7 +52,7 @@ body {
     visibility: visible;
 }
 
-.message-group:not(.my-text) .message:first-of-type {
+/* .message-group:not(.my-text) .message:first-of-type {
     border-top-left-radius: 1.5rem !important;
     border-bottom-left-radius: 0.25rem !important;
 }
@@ -86,4 +86,4 @@ body {
 
 .message-group.my-text .status-icon:last-of-type {
     display: block;
-}
+} */

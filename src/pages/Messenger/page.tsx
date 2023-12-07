@@ -81,76 +81,82 @@ type MessageCardProps = {
         seenList: string[];
         iAmSeen: boolean;
     };
+    onClick?: React.MouseEventHandler;
 };
 export const MessageCard: React.FC<MessageCardProps> = (props) => {
     return (
-        <div className="left-message relative cursor-pointer flex gap-3 items-center p-3 rounded-xl dark:hover:bg-[#ffffff09] hover:bg-[#00000009]">
-            <Avatar className="!w-12 !h-12" />
-            <div className="flex w-full flex-col">
-                {/* Name */}
-                <Typography
-                    fontFamily={'inherit'}
-                    fontSize={'1'}
-                    lineHeight={1.25}
-                    className="dark:text-white"
-                >
-                    {props.username || 'Tên người dùng'}
-                </Typography>
-                {/* The latest message and time */}
-                <div className="inline-flex flex-nowrap w-full">
+        <span className="left-message relative flex items-center">
+            <div
+                onClick={props.onClick}
+                className="cursor-pointer flex gap-3 items-center p-3 rounded-xl dark:hover:bg-[#ffffff09] hover:bg-[#00000009]"
+            >
+                <Avatar className="!w-12 !h-12" />
+                <div className="flex w-full flex-col">
+                    {/* Name */}
                     <Typography
-                        fontSize={'0.9rem'}
                         fontFamily={'inherit'}
+                        fontSize={'1'}
                         lineHeight={1.25}
-                        className={clsx('text-[#999] line-clamp-1', {
-                            'dark:!text-[#eee] !text-black':
-                                !props.status.iAmSeen,
-                        })}
+                        className="dark:text-white"
                     >
-                        {props.message || ''}
+                        {props.username || 'Tên người dùng'}
                     </Typography>
-                    <LuDot className="text-[#999]" />
-                    <Typography
-                        component={'span'}
-                        fontSize={'0.9rem'}
-                        fontFamily={'inherit'}
-                        lineHeight={1.25}
-                        className="!text-[#999]"
-                        whiteSpace={'nowrap'}
-                    >
-                        {props.messageTime}
-                    </Typography>
+                    {/* The latest message and time */}
+                    <div className="inline-flex flex-nowrap w-full">
+                        <Typography
+                            fontSize={'0.9rem'}
+                            fontFamily={'inherit'}
+                            lineHeight={1.25}
+                            className={clsx('text-[#999] line-clamp-1', {
+                                'dark:!text-[#eee] !text-black':
+                                    !props.status.iAmSeen,
+                            })}
+                        >
+                            {props.message || ''}
+                        </Typography>
+                        <LuDot className="text-[#999]" />
+                        <Typography
+                            component={'span'}
+                            fontSize={'0.9rem'}
+                            fontFamily={'inherit'}
+                            lineHeight={1.25}
+                            className="!text-[#999]"
+                            whiteSpace={'nowrap'}
+                        >
+                            {props.messageTime}
+                        </Typography>
+                    </div>
+                </div>
+                <div className="status-message flex gap-1 items-center">
+                    {/* Not seen yet */}
+                    {!props.status.iAmSeen && (
+                        <span className="bg-sky-400 w-3 h-3 rounded-full"></span>
+                    )}
+                    {/* They already seen the message */}
+                    {props.status.seenList.map((avt, index) => {
+                        return (
+                            <Avatar
+                                key={index}
+                                src={avt}
+                                alt=""
+                                className="!w-4 !h-4"
+                            />
+                        );
+                    })}
+                    {/* Disable notify */}
+                    {props.disableNotify && (
+                        <BsBellSlashFill className="text-xl text-[#888]" />
+                    )}
                 </div>
             </div>
-            <div className="setting-message absolute right-16 shadow-lg rounded-full invisible">
+            <div className="setting-message absolute shadow-lg right-16 rounded-full invisible">
                 <IconButton
                     title="Cài đặt tin nhắn"
                     icon={<BiDotsHorizontalRounded />}
                     className="hover:bg-[#0000009a] text-white bg-[#000000a7]"
                 />
             </div>
-            <div className="status-message flex gap-1 items-center">
-                {/* Not seen yet */}
-                {!props.status.iAmSeen && (
-                    <span className="bg-sky-400 w-3 h-3 rounded-full"></span>
-                )}
-                {/* They already seen the message */}
-                {props.status.seenList.map((avt, index) => {
-                    return (
-                        <Avatar
-                            key={index}
-                            src={avt}
-                            alt=""
-                            className="!w-4 !h-4"
-                        />
-                    );
-                })}
-                {/* Disable notify */}
-                {props.disableNotify && (
-                    <BsBellSlashFill className="text-xl text-[#888]" />
-                )}
-            </div>
-        </div>
+        </span>
     );
 };
 

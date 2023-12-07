@@ -1,41 +1,130 @@
 {
-    "first": [
-        {
-            "isMessageTime": true,
-            "time": 1698006906881
-        },
-        {
-            "isMyMessage": false,
-            "time": 1698006906881,
-            "message": "Test 1",
-            "state": {
-                "status": "seen",
-                "seenList": ["1", "2"]
-            }
-        },
-        {
-            "isMyMessage": false,
-            "time": 1698006906881,
-            "message": "Test 2"
-        },
-        {
-            "isMyMessage": false,
-            "isEndText": true,
-            "time": 1698006906881,
-            "message": "Test 3",
-            "state": {
-                "status": "seen",
-                "seenList": ["1", "2"]
-            }
-        },
-        {
-            "isMyMessage": true,
-            "time": 1698006906881,
-            "message": "Test",
-            "state": {
-                "status": "seen",
-                "seenList": ["1", "2"]
-            }
+    "friend_list": {
+        "1": {
+            "chat_id": "1_asd",
+            "id": "1",
+            "username": "trihai1",
+            "display_name": "Trí Hải",
+            "avt_src": "https://imagev3.vietnamplus.vn/w1000/Uploaded/2023/lepz/2020_07_07/meo_2.jpg.webp",
+            "last_active": "213213123123",
+            "isOnline": true
         }
-    ]
+    },
+    "message_list": {
+        "1_asd": {
+            "user_id": "2",
+            "chat_id": "1_asd",
+            "members": {
+                "1": {
+                    "id": "1",
+                    "username": "trihai1",
+                    "display_name": "Trí Hải",
+                    "avt_src": "https://imagev3.vietnamplus.vn/w1000/Uploaded/2023/lepz/2020_07_07/meo_2.jpg.webp",
+                    "last_active": "213213123123",
+                    "isOnline": true
+                },
+                "2": {
+                    "id": "2",
+                    "username": "chouphat156",
+                    "display_name": "Phát Trần",
+                    "avt_src": "https://i.pinimg.com/280x280_RS/20/63/b8/2063b8a0a130b3091c2b199cc3f86b8a.jpg",
+                    "last_active": "213213123123",
+                    "isOnline": true
+                },
+                "3": {
+                    "id": "3",
+                    "username": "test2",
+                    "display_name": "Nguyễn Văn A",
+                    "avt_src": "https://inkythuatso.com/uploads/thumbnails/800/2022/05/a732e392b657be4fceffdffd214e5e21-08-23-41-28.jpg",
+                    "last_active": "213213123123",
+                    "isOnline": true
+                }
+            },
+            "seen_info": {
+                "1": {
+                    "message_id": "4",
+                    "is_recive": true,
+                    "is_seen": false,
+                    "time": 1698006906881
+                },
+                "3": {
+                    "message_id": "13",
+                    "is_recive": true,
+                    "is_seen": true,
+                    "time": 1698006906881
+                }
+            },
+            "messages": [
+                {
+                    "isMessageTime": true,
+                    "time": 1698006906881
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 1",
+                    "send_by": "1"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 1",
+                    "send_by": "1"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 1",
+                    "send_by": "1"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 1",
+                    "send_by": "1"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 2",
+                    "send_by": "2"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 2",
+                    "send_by": "2"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 2",
+                    "send_by": "2"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 2",
+                    "send_by": "2"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 3",
+                    "send_by": "3"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 1",
+                    "send_by": "1"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 1",
+                    "send_by": "1"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 2",
+                    "send_by": "2"
+                },
+                {
+                    "time": 1698006906881,
+                    "message": "Test 2",
+                    "send_by": "2"
+                }
+            ]
+        }
+    }
 }
