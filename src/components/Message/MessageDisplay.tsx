@@ -4,10 +4,7 @@ import Message from './Message';
 import { Avatar } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import _ from 'underscore';
-type MessageDisplayProps = {
-    className?: string;
-    messageDetail: any;
-};
+
 function randomIntFromInterval(min: number, max: number) {
     // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -18,22 +15,23 @@ const cvtSeenState2SeenInfo = (
     myId?: string,
 ) => {
     if (_.isEmpty(state) || state === undefined) {
-        return { status: 'sent2', seenList: [] };
+        return { status: 'sent1', seenList: [] };
     }
     let isAnyRecive = false;
     const seenList: any[] = [];
     Object.keys(state).forEach((memberId) => {
         if (removeMySeenState && memberId === myId) return;
         if (state[memberId].is_recive) isAnyRecive = true;
-        if (state[memberId].is_seen) return seenList.push(state[memberId]);
+        if (state[memberId].is_seen || memberId === myId)
+            return seenList.push(state[memberId]);
     });
     let status;
     if (!_.isEmpty(seenList) && seenList.length > 0) {
         status = 'seen';
     } else if (isAnyRecive) {
-        status = 'sent1';
-    } else {
         status = 'sent2';
+    } else {
+        status = 'sent1';
     }
 
     return { seenList, status };
@@ -65,14 +63,15 @@ type SeenStateType = {
         [messageId: string | number]: { [memberId: string | number]: any };
     };
 };
-const MessageDisplay: React.FC<MessageDisplayProps> = ({
-    className,
-    messageDetail,
-}) => {
+type MessageDisplayProps = {
+    className?: string;
+    roomDetail: any;
+};
+const MessageDisplay: React.FC<MessageDisplayProps> = ({ roomDetail }) => {
     const [messagesHistory, setMessagesHistory] = useState<any[]>();
     useEffect(() => {
         let id = setTimeout(() => {
-            setMessagesHistory(messageDetail.messages);
+            setMessagesHistory(roomDetail.messages);
             clearTimeout(id);
         }, 500);
 
@@ -81,7 +80,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
         };
     }, []);
     const [seenState, setSeenState] = useState<SeenStateType>({
-        byMemberId: messageDetail.seen_info,
+        byMemberId: roomDetail.seen_info,
         byMessageId: undefined,
     });
 
@@ -99,28 +98,24 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
             });
         });
     };
-    console.log('rerender');
     useEffect(() => {
-        console.log(seenState);
+        console.log('rerender');
     }, [seenState]);
-    if (!messageDetail) return <></>;
+    if (!roomDetail) return <></>;
     const MessageEndRef = useRef<HTMLDivElement>(null);
     const lastMessageMemberId = useRef<string | undefined>(undefined);
     useEffect(() => {
         MessageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messagesHistory]);
     useEffect(() => {
-        if (
-            messageDetail.messages &&
-            messageDetail.messages !== messagesHistory
-        ) {
-            setMessagesHistory(messageDetail.messages);
+        if (roomDetail.messages && roomDetail.messages !== messagesHistory) {
+            setMessagesHistory(roomDetail.messages);
         }
-    }, [messageDetail.messages, messagesHistory]);
+    }, [roomDetail.messages, messagesHistory]);
     return (
         <>
             {messagesHistory?.map((message, index, arr) => {
-                const isMyMessage = message.send_by === messageDetail.user_id;
+                const isMyMessage = message.send_by === roomDetail.user_id;
                 let lastTemp = lastMessageMemberId.current;
                 let isNextMessageFromAnotherMember =
                     lastTemp !== message.send_by &&
@@ -151,22 +146,38 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
                             });
                         }}
                         key={index}
-                        className={clsx('mx-2 flex items-center mb-[2px]', {
+                        className={clsx('mx-2 flex items-center', {
                             'flex-row-reverse': isMyMessage,
                             'mb-4': isNextMessageFromAnotherMember,
+                            'mb-[2px]': !isNextMessageFromAnotherMember,
                         })}
                     >
                         {!isMyMessage && (
                             <span className="w-8 h-8">
                                 {isNextMessageFromAnotherMember && (
-                                    <Avatar
-                                        src={
-                                            messageDetail.members[
-                                                message.send_by
-                                            ].avt_src
-                                        }
-                                        className="!w-8 !h-8"
-                                    />
+                                    // <Avatar
+                                    //     src={
+                                    //         roomDetail.members[message.send_by]
+                                    //             .avt_src
+                                    //     }
+                                    //     className="!w-8 !h-8"
+                                    // />
+                                    <div className="relative">
+                                        <Avatar
+                                            className="!w-8 !h-8"
+                                            src={
+                                                roomDetail.members[
+                                                    message.send_by
+                                                ].avt_src
+                                            }
+                                        />
+                                        {roomDetail.members[message.send_by]
+                                            .isOnline && (
+                                            <div className="absolute bg-[#fff] dark:bg-[#222] w-[12px] h-[12px] bottom-0 right-0 rounded-full flex justify-center items-center">
+                                                <span className="bg-[#3e3e] rounded-full w-2 h-2"></span>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
                             </span>
                         )}
@@ -179,12 +190,14 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({
                             <Message
                                 {...message}
                                 isMyMessage={isMyMessage}
-                                members={messageDetail.members}
+                                members={roomDetail.members}
                                 isLastMessage={index === arr.length - 1}
                                 seenInfo={cvtSeenState2SeenInfo(
                                     seenState.byMessageId?.[index],
+                                    true,
+                                    roomDetail.user_id,
                                 )}
-                                myId={messageDetail.user_id}
+                                myId={roomDetail.user_id}
                             />
                         </div>
                         {index === arr.length - 1 && (

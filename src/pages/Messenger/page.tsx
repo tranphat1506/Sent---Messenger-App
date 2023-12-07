@@ -73,7 +73,7 @@ const MessengerTitle: React.FC<MessengerTitleProps> = (props) => {
 };
 
 type MessageCardProps = {
-    username?: string;
+    displayName?: string;
     message?: string;
     messageTime?: string;
     disableNotify: boolean;
@@ -88,7 +88,7 @@ export const MessageCard: React.FC<MessageCardProps> = (props) => {
         <span className="left-message relative flex items-center">
             <div
                 onClick={props.onClick}
-                className="cursor-pointer flex gap-3 items-center p-3 rounded-xl dark:hover:bg-[#ffffff09] hover:bg-[#00000009]"
+                className="w-full cursor-pointer flex gap-3 items-center p-3 rounded-xl dark:hover:bg-[#ffffff09] hover:bg-[#00000009]"
             >
                 <Avatar className="!w-12 !h-12" />
                 <div className="flex w-full flex-col">
@@ -99,7 +99,7 @@ export const MessageCard: React.FC<MessageCardProps> = (props) => {
                         lineHeight={1.25}
                         className="dark:text-white"
                     >
-                        {props.username || 'Tên người dùng'}
+                        {props.displayName || 'Tên người dùng'}
                     </Typography>
                     {/* The latest message and time */}
                     <div className="inline-flex flex-nowrap w-full">

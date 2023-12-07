@@ -1,6 +1,7 @@
 import { MessageCard } from '@/src/pages/Messenger/page';
-import { useState } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import MessageContainer from '../Message/MessageContainer';
+import { room_list } from '../Message/MessageFakeHistory.json';
 
 type MessengerLayoutProps = {
     MessengerTitle: React.ReactNode;
@@ -8,9 +9,20 @@ type MessengerLayoutProps = {
 const MessengerLayout: React.FC<MessengerLayoutProps> = ({
     MessengerTitle,
 }) => {
-    const [userId, setUserId] = useState<string | undefined>();
-    const handleChangeUser = (id: string) => (e: React.MouseEvent) => {
-        setUserId(id);
+    const [roomList, setRoomList] = useState<any>(null);
+    useEffect(() => {
+        let id = setTimeout(() => {
+            setRoomList(room_list);
+            clearTimeout(id);
+        }, 2000);
+        return () => {
+            clearTimeout(id);
+        };
+    }, []);
+    const [roomDetail, setRoomDetail] = useState<any>(null);
+    const handleChangeRoom = (id: string) => () => {
+        if (id === roomDetail?.room_id) return false;
+        setRoomDetail({ ...room_list[id as keyof typeof room_list] });
     };
     return (
         <div className="w-screen h-auto flex justify-between">
@@ -18,18 +30,32 @@ const MessengerLayout: React.FC<MessengerLayoutProps> = ({
                 {MessengerTitle}
                 <div className="h-full mx-2 my-2 overflow-auto">
                     <div className="mr-2 font-NunitoMedium">
-                        <MessageCard
-                            onClick={handleChangeUser('1')}
-                            username="Trí Hải"
-                            message="Hello em! Cho anh làm quen."
-                            messageTime="5 phút"
-                            disableNotify={true}
-                            status={{ iAmSeen: false, seenList: [] }}
-                        />
+                        {roomList &&
+                            Object.keys(roomList).map((roomId) => {
+                                const room = roomList[roomId];
+                                if (!room)
+                                    return <Fragment key={roomId}></Fragment>;
+                                const lastMessage =
+                                    room.messages[room.messages.length - 1];
+                                return (
+                                    <MessageCard
+                                        key={roomId}
+                                        onClick={handleChangeRoom(roomId)}
+                                        displayName={room.display_name}
+                                        message={lastMessage.message}
+                                        messageTime={lastMessage.time}
+                                        disableNotify={true}
+                                        status={{
+                                            iAmSeen: false,
+                                            seenList: [],
+                                        }}
+                                    />
+                                );
+                            })}
                     </div>
                 </div>
             </div>
-            <MessageContainer userId={userId} />
+            <MessageContainer roomDetail={roomDetail} />
         </div>
     );
 };

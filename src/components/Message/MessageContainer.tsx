@@ -5,31 +5,30 @@ import { MdKeyboardVoice } from 'react-icons/md';
 import MessageDisplay from './MessageDisplay';
 import { BiSolidInfoCircle } from 'react-icons/bi';
 import { Avatar, Typography } from '@mui/material';
-import { friend_list, message_list } from '../Message/MessageFakeHistory.json';
-import { useRef } from 'react';
 
 type MessageContainerProps = {
-    userId?: string;
+    roomDetail?: any;
 };
 
-const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
-    const userInfo = userId
-        ? friend_list[userId as keyof typeof friend_list]
-        : undefined;
-    const messageDetail = userId
-        ? message_list[userInfo?.chat_id as keyof typeof message_list]
-        : undefined;
-    if (!userInfo) return <></>;
+const MessageContainer: React.FC<MessageContainerProps> = ({ roomDetail }) => {
+    if (!roomDetail) return <></>;
+    const isAnyOnline = Object.keys(roomDetail.members).find((memberId) => {
+        return (
+            (roomDetail.members as any)[
+                memberId as keyof typeof roomDetail.members
+            ].isOnline === true
+        );
+    });
     return (
         <div className="dark:bg-[#222] w-full h-[calc(100vh-80px)] flex flex-col">
-            <div className="px-4 py-1 shadow-md flex justify-between">
+            <div className="px-4 py-2 shadow-md flex justify-between">
                 <button className="inline-flex gap-3 items-center p-2 font-NunitoMedium dark:hover:bg-[#ffffff17] hover:bg-[#00000017] rounded-xl">
                     <div className="relative">
                         <Avatar
                             className="!w-11 !h-11"
-                            src={userInfo?.avt_src}
+                            src={roomDetail?.avt_src}
                         />
-                        {userInfo?.isOnline && (
+                        {isAnyOnline && (
                             <div className="absolute bg-[#fff] dark:bg-[#222] w-[18px] h-[18px] bottom-0 right-0 rounded-full flex justify-center items-center">
                                 <span className="bg-[#3e3e] rounded-full w-3 h-3"></span>
                             </div>
@@ -41,9 +40,9 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
                             fontFamily={'inherit'}
                             fontSize={'1'}
                             lineHeight={1.2}
-                            className="dark:text-white"
+                            className="dark:text-white line-clamp-1 max-w-[200px]"
                         >
-                            {userInfo?.display_name || 'Người dùng'}
+                            {roomDetail?.display_name || 'Người dùng'}
                         </Typography>
                         {/* Last online */}
                         <div className="inline-flex flex-nowrap w-full">
@@ -53,8 +52,10 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
                                 lineHeight={1.2}
                                 className={'text-[#999]'}
                             >
-                                {userInfo?.isOnline
-                                    ? 'Đang hoạt động'
+                                {roomDetail?.isGroupChat
+                                    ? `${
+                                          Object.keys(roomDetail.members).length
+                                      } thành viên`
                                     : 'Hoạt động 2 phút trước'}
                             </Typography>
                         </div>
@@ -75,7 +76,7 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
             </div>
             <div className="h-full overflow-x-hidden overflow-y-auto">
                 <div className="message-display">
-                    <MessageDisplay messageDetail={messageDetail} />
+                    <MessageDisplay roomDetail={roomDetail} />
                 </div>
             </div>
             <div className="flex mx-4 my-3 justify-between gap-4">
