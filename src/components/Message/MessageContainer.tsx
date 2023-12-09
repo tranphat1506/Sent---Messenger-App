@@ -16,7 +16,7 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ roomDetail }) => {
         return (
             (roomDetail.members as any)[
                 memberId as keyof typeof roomDetail.members
-            ].isOnline === true
+            ].is_online === true
         );
     });
     return (
@@ -52,7 +52,7 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ roomDetail }) => {
                                 lineHeight={1.2}
                                 className={'text-[#999]'}
                             >
-                                {roomDetail?.isGroupChat
+                                {roomDetail?.is_group_chat
                                     ? `${
                                           Object.keys(roomDetail.members).length
                                       } thành viên`

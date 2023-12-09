@@ -3,7 +3,7 @@
         "1_asd": {
             "user_id": "1",
             "room_id": "1_asd",
-            "isGroupChat": true,
+            "is_group_chat": true,
             "display_name": "Group của Trí Hải",
             "avt_src": "https://imagev3.vietnamplus.vn/w1000/Uploaded/2023/lepz/2020_07_07/meo_2.jpg.webp",
             "members": {
@@ -13,7 +13,7 @@
                     "display_name": "Trí Hải",
                     "avt_src": "https://imagev3.vietnamplus.vn/w1000/Uploaded/2023/lepz/2020_07_07/meo_2.jpg.webp",
                     "last_active": "1701949691108",
-                    "isOnline": true
+                    "is_online": true
                 },
                 "2": {
                     "id": "2",
@@ -21,7 +21,7 @@
                     "display_name": "Phát Trần",
                     "avt_src": "https://i.pinimg.com/280x280_RS/20/63/b8/2063b8a0a130b3091c2b199cc3f86b8a.jpg",
                     "last_active": "1701949691108",
-                    "isOnline": true
+                    "is_online": true
                 },
                 "3": {
                     "id": "3",
@@ -29,7 +29,7 @@
                     "display_name": "Nguyễn Văn A",
                     "avt_src": "https://inkythuatso.com/uploads/thumbnails/800/2022/05/a732e392b657be4fceffdffd214e5e21-08-23-41-28.jpg",
                     "last_active": "1701949691108",
-                    "isOnline": true
+                    "is_online": true
                 }
             },
             "seen_info": {

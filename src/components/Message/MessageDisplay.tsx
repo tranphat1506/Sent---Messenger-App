@@ -172,7 +172,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ roomDetail }) => {
                                             }
                                         />
                                         {roomDetail.members[message.send_by]
-                                            .isOnline && (
+                                            .is_online && (
                                             <div className="absolute bg-[#fff] dark:bg-[#222] w-[12px] h-[12px] bottom-0 right-0 rounded-full flex justify-center items-center">
                                                 <span className="bg-[#3e3e] rounded-full w-2 h-2"></span>
                                             </div>
