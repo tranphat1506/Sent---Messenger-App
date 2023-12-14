@@ -7,7 +7,7 @@ function App() {
         <Routes>
             {publicRoutes.map((route, index) => {
                 const Page = route.page;
-                const Layout = route.layout || React.Fragment;
+                const Layout: React.FC<any> = route.layout || React.Fragment;
                 const { props: layoutProps } = route || {};
                 return (
                     <Route
@@ -23,7 +23,7 @@ function App() {
             })}
             {privateRoutes.map((route, index) => {
                 const Page = route.page;
-                const Layout = route.layout || React.Fragment;
+                const Layout: React.FC<any> = route.layout || React.Fragment;
                 const { props: layoutProps } = route || {};
                 return (
                     <Route

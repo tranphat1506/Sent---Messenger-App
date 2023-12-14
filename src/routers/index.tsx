@@ -1,5 +1,6 @@
 import { HomePage } from '../pages/Home';
 import { MessengerPage } from '../pages/Messenger';
+import { AuthPage } from '../pages/Auth';
 import DefaultLayout from '../components/Layouts/Default';
 type Router = Route[] | [];
 type Route = {
@@ -20,6 +21,12 @@ const publicRoutes: Router = [
         page: MessengerPage,
         layout: DefaultLayout,
         props: { hide: 'footer' },
+    },
+    {
+        path: '/auth',
+        page: AuthPage,
+        layout: DefaultLayout,
+        props: { hide: ['footer', 'header'] },
     },
 ];
 

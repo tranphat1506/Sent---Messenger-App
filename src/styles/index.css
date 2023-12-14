@@ -17,3 +17,11 @@
     font-family: 'NunitoBlack';
     src: url('../assets/fonts/Nunito/Nunito-ExtraBold.ttf');
 }
+/* Root */
+:root {
+    --semi-black: #333;
+    --black: #111;
+    --white: #fff;
+    --deny: #ff4949;
+    --accept: #67d850;
+}

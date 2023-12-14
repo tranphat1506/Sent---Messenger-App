@@ -68,10 +68,15 @@ type MessageDisplayProps = {
     roomDetail: any;
 };
 const MessageDisplay: React.FC<MessageDisplayProps> = ({ roomDetail }) => {
-    const [messagesHistory, setMessagesHistory] = useState<any[]>();
+    const [messagesHistory, setMessagesHistory] = useState<{
+        message_count: number;
+        history: {
+            [messageId: string | number]: any;
+        };
+    }>();
     useEffect(() => {
         let id = setTimeout(() => {
-            setMessagesHistory(roomDetail.messages);
+            setMessagesHistory(roomDetail.message_details);
             clearTimeout(id);
         }, 500);
 
@@ -100,6 +105,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ roomDetail }) => {
     };
     useEffect(() => {
         console.log('rerender');
+        console.log(seenState);
     }, [seenState]);
     if (!roomDetail) return <></>;
     const MessageEndRef = useRef<HTMLDivElement>(null);
@@ -107,105 +113,114 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ roomDetail }) => {
     useEffect(() => {
         MessageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messagesHistory]);
-    useEffect(() => {
-        if (roomDetail.messages && roomDetail.messages !== messagesHistory) {
-            setMessagesHistory(roomDetail.messages);
-        }
-    }, [roomDetail.messages, messagesHistory]);
     return (
         <>
-            {messagesHistory?.map((message, index, arr) => {
-                const isMyMessage = message.send_by === roomDetail.user_id;
-                let lastTemp = lastMessageMemberId.current;
-                let isNextMessageFromAnotherMember =
-                    lastTemp !== message.send_by &&
-                    message.send_by !== arr[index + 1]?.send_by
-                        ? true
-                        : lastTemp === message.send_by &&
-                          message.send_by !== arr[index + 1]?.send_by
-                        ? true
-                        : false;
-                lastMessageMemberId.current = message.send_by;
-                if (message.isMessageTime) {
-                    lastMessageMemberId.current = undefined;
-                    return <MessageTime key={index} time={message.time} />;
-                }
-                return (
-                    <div
-                        onClick={() => {
-                            const rdId = randomIntFromInterval(1, 3);
-                            const rdMId = randomIntFromInterval(
-                                0,
-                                arr.length - 1,
-                            );
-                            handleUpdateSeenState(rdId, {
-                                message_id: rdMId,
-                                is_recive: true,
-                                is_seen: true,
-                                time: Date.now(),
-                            });
-                        }}
-                        key={index}
-                        className={clsx('mx-2 flex items-center', {
-                            'flex-row-reverse': isMyMessage,
-                            'mb-4': isNextMessageFromAnotherMember,
-                            'mb-[2px]': !isNextMessageFromAnotherMember,
-                        })}
-                    >
-                        {!isMyMessage && (
-                            <span className="w-8 h-8">
-                                {isNextMessageFromAnotherMember && (
-                                    // <Avatar
-                                    //     src={
-                                    //         roomDetail.members[message.send_by]
-                                    //             .avt_src
-                                    //     }
-                                    //     className="!w-8 !h-8"
-                                    // />
-                                    <div className="relative">
-                                        <Avatar
-                                            className="!w-8 !h-8"
-                                            src={
-                                                roomDetail.members[
-                                                    message.send_by
-                                                ].avt_src
-                                            }
-                                        />
-                                        {roomDetail.members[message.send_by]
-                                            .is_online && (
-                                            <div className="absolute bg-[#fff] dark:bg-[#222] w-[12px] h-[12px] bottom-0 right-0 rounded-full flex justify-center items-center">
-                                                <span className="bg-[#3e3e] rounded-full w-2 h-2"></span>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </span>
-                        )}
+            {messagesHistory &&
+                Object.keys(messagesHistory.history).map((messageId) => {
+                    const message = messagesHistory.history[messageId];
+                    const isMyMessage = message.send_by === roomDetail.user_id;
+                    let lastTemp = lastMessageMemberId.current;
+                    let isNextMessageFromAnotherMember =
+                        lastTemp !== message.send_by &&
+                        message.send_by !==
+                            messagesHistory.history[Number(messageId) + 1]
+                                ?.send_by
+                            ? true
+                            : lastTemp === message.send_by &&
+                              message.send_by !==
+                                  messagesHistory.history[Number(messageId) + 1]
+                                      ?.send_by
+                            ? true
+                            : false;
+                    lastMessageMemberId.current = message.send_by;
+                    if (message.isMessageTime) {
+                        lastMessageMemberId.current = undefined;
+                        return (
+                            <MessageTime key={messageId} time={message.time} />
+                        );
+                    }
+                    return (
                         <div
-                            className={clsx('flex flex-col ml-2 w-full', {
-                                'my-text mr-2 ml-0 items-end my-text':
-                                    isMyMessage,
+                            onClick={() => {
+                                const rdId = randomIntFromInterval(1, 3);
+                                const rdMId = randomIntFromInterval(
+                                    1,
+                                    messagesHistory.message_count,
+                                );
+                                handleUpdateSeenState(rdId, {
+                                    message_id: rdMId,
+                                    is_recive: true,
+                                    is_seen: true,
+                                    time: Date.now(),
+                                });
+                            }}
+                            key={messageId}
+                            className={clsx('mx-2 flex items-center', {
+                                'flex-row-reverse': isMyMessage,
+                                'mb-4': isNextMessageFromAnotherMember,
+                                'mb-[2px]': !isNextMessageFromAnotherMember,
                             })}
                         >
-                            <Message
-                                {...message}
-                                isMyMessage={isMyMessage}
-                                members={roomDetail.members}
-                                isLastMessage={index === arr.length - 1}
-                                seenInfo={cvtSeenState2SeenInfo(
-                                    seenState.byMessageId?.[index],
-                                    true,
-                                    roomDetail.user_id,
-                                )}
-                                myId={roomDetail.user_id}
-                            />
+                            {!isMyMessage && (
+                                <span className="w-8 h-8">
+                                    {isNextMessageFromAnotherMember && (
+                                        // <Avatar
+                                        //     src={
+                                        //         roomDetail.members[message.send_by]
+                                        //             .avt_src
+                                        //     }
+                                        //     className="!w-8 !h-8"
+                                        // />
+                                        <div className="relative">
+                                            <Avatar
+                                                className="!w-8 !h-8"
+                                                src={
+                                                    roomDetail.members[
+                                                        message.send_by
+                                                    ].avt_src
+                                                }
+                                            />
+                                            {roomDetail.members[message.send_by]
+                                                .is_online && (
+                                                <div className="absolute bg-[#fff] dark:bg-[#222] w-[12px] h-[12px] bottom-0 right-0 rounded-full flex justify-center items-center">
+                                                    <span className="bg-[#3e3e] rounded-full w-2 h-2"></span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </span>
+                            )}
+                            <div
+                                className={clsx('flex flex-col ml-2 w-full', {
+                                    'my-text mr-2 ml-0 items-end my-text':
+                                        isMyMessage,
+                                })}
+                            >
+                                <Message
+                                    {...message}
+                                    isMyMessage={isMyMessage}
+                                    members={roomDetail.members}
+                                    isLastMessage={
+                                        Number(messageId) ===
+                                        messagesHistory.message_count
+                                    }
+                                    seenInfo={cvtSeenState2SeenInfo(
+                                        seenState.byMessageId?.[
+                                            Number(messageId)
+                                        ],
+                                        true,
+                                        roomDetail.user_id,
+                                    )}
+                                    myId={roomDetail.user_id}
+                                />
+                            </div>
+                            {Number(messageId) ===
+                                messagesHistory.message_count && (
+                                <span ref={MessageEndRef}></span>
+                            )}
                         </div>
-                        {index === arr.length - 1 && (
-                            <span ref={MessageEndRef}></span>
-                        )}
-                    </div>
-                );
-            })}
+                    );
+                })}
         </>
     );
 };
