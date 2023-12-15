@@ -9,6 +9,7 @@ import { FacebookSvg, GoogleSvg } from '../Svg/';
 import { AuthComponentProps } from './Login';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '@/src/constant';
 import { throttleFunction } from '@/src/utils/CommonFunction';
+import { CircularProgress } from '@mui/material';
 const defaultPlaceholder = {
     email: 'Địa chỉ email (*)',
     username: 'Tên tài khoản (*)',
@@ -43,6 +44,7 @@ const minAge = {
 };
 const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const navigate = useNavigate();
+    const [progressing, setProgressing] = useState(false);
     const [authStore, dispatchAuthStore] = useAuthStore();
     useEffect(() => {
         if (authStore?.isLogging && returnPage) {
@@ -65,11 +67,7 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [acceptEmail, setAcceptEmail] = useState(false);
-
-    const [emailErrorMess, setEmailErrorMess] = useState({
-        on: false,
-        message: '',
-    });
+    const [globalErrorMessage, setGlobalErrorMessage] = useState('');
 
     const [onFocusPassword, setOnFocusPassword] = useState(false);
     const changeFocus = (inputName: string, status: boolean) => {
@@ -108,7 +106,8 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
         return setCaptcha(true);
     };
     const signUp = async () => {
-        if (!accept) return;
+        if (progressing || !accept) return false;
+        setProgressing(true);
         try {
             const data = {
                 birth: birth,
@@ -130,9 +129,14 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
                 body: JSON.stringify(data),
             });
             const json = await r.json();
-            if (!r.ok) throw new Error(json);
+            setProgressing(false);
+            if (!r.ok) {
+                setGlobalErrorMessage(json.message);
+            }
+            return back();
         } catch (error) {
-            console.log(error);
+            setProgressing(false);
+            setGlobalErrorMessage('Vui lòng thử lại trong giây lát.');
         }
     };
     const listRef = useRef<React.LegacyRef<HTMLDivElement>[] | undefined>([
@@ -218,16 +222,11 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
                     acceptForSignUp.current.email = false;
                     successMessage(emailRef, 1);
                     errorMessage(emailRef, 'Email không được trống.');
-                    setEmailErrorMess({
-                        on: true,
-                        message: 'Email không được trống.',
-                    });
                     break;
                 }
                 acceptForSignUp.current.email = RegExp(
                     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/gm,
                 ).test(value);
-                setEmailErrorMess({ on: false, message: '' });
                 errorMessage(emailRef, '', 1);
                 successMessage(emailRef);
                 break;
@@ -330,6 +329,14 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
             }
         }
     }, [username]);
+    useEffect(() => {
+        if (!!password) {
+            if (!acceptForSignUp.current.password) {
+                successMessage(pwdRef, 1);
+                errorMessage(pwdRef, 'Mật khẩu không hợp lệ.');
+            }
+        }
+    }, [password]);
 
     const back = () => {
         return navigate('/home');
@@ -361,6 +368,18 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
                     >
                         (*) Bắt buộc
                     </span>
+                    {!!globalErrorMessage && (
+                        <span
+                            className={clsx(
+                                styles.message__item,
+                                styles.message__deny,
+                                styles['message--show'],
+                                '!mt-4',
+                            )}
+                        >
+                            {globalErrorMessage}
+                        </span>
+                    )}
                     <div className={clsx(styles.authForm__content)}>
                         <div className="flex gap-2">
                             <div
@@ -441,18 +460,6 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
                                 placeholder={defaultPlaceholder.email}
                             />
                         </div>
-                        <span
-                            className={clsx(
-                                styles.message__item,
-                                styles.message__deny,
-                                {
-                                    [styles['message--show']]:
-                                        emailErrorMess.on,
-                                },
-                            )}
-                        >
-                            {emailErrorMess.message}
-                        </span>
                         <div
                             ref={usernameRef}
                             className={clsx(
@@ -689,7 +696,11 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
                                 },
                             )}
                         >
-                            Đăng ký
+                            {progressing ? (
+                                <CircularProgress color="inherit" />
+                            ) : (
+                                'Đăng ký'
+                            )}
                         </button>
                         <div className={clsx(styles.content__quickSignIn)}>
                             <div className={clsx(styles.content__split)}>

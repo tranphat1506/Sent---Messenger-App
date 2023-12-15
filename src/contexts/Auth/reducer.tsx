@@ -14,7 +14,7 @@ const reducer: React.Reducer<UserState, UserPayload> = (
     switch (payload.type) {
         case LOGOUT_USER:
         case LOGIN_USER:
-            newState = { ...state, ...payload };
+            newState = { ...state, ...payload.payload };
             break;
         default:
             throw new Error('Invalid type!');

@@ -30,44 +30,28 @@ a {
     .btn__sign_up {
         color: #fff;
         padding: 0.5rem 1.5rem;
-        background-color: #8c66ff;
-        border-bottom: 3px solid #634da3;
-        &:hover {
-            background-color: #a688ff;
-        }
-        &:active {
-            background-color: #b39aff;
-        }
     }
     .btn__sign_in {
         color: #fff;
         padding: 0.5rem 1.5rem;
-        background-color: #f00b51;
-        border-bottom: 3px solid #a90034;
-        &:hover,
-        &:active {
-            background-color: #ec4779;
-        }
     }
 }
 .btn__sign_up {
-    color: #fff !important;
-    background-color: #8c66ff !important;
-    border-bottom: 3px solid #634da3;
-    &:hover {
-        background-color: #a688ff !important;
-    }
-    &:active {
-        background-color: #b39aff !important;
-    }
-}
-.btn__sign_in {
     color: #fff !important;
     background-color: #f00b51 !important;
     border-bottom: 3px solid #a90034;
     &:hover,
     &:active {
         background-color: #ec4779 !important;
+    }
+}
+.btn__sign_in {
+    color: #fff !important;
+    background-color: #38bdf8 !important;
+    border-bottom: 3px solid #0369a1;
+    &:hover,
+    &:active {
+        background-color: #0ea5e9 !important;
     }
 }
 .authForm {
@@ -139,6 +123,8 @@ a {
             border-radius: 1.5rem;
             padding: 0.7rem;
             font-family: 'NunitoBlack';
+            display: flex;
+            justify-content: center;
         }
         .icon {
             cursor: pointer;

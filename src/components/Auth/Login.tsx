@@ -9,6 +9,7 @@ import FontIcon from '../Common/FontIcon';
 import { FacebookSvg, GoogleSvg } from '../Svg/';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '@/src/constant';
 import { throttleFunction } from '@/src/utils/CommonFunction';
+import { CircularProgress } from '@mui/material';
 export type AuthComponentProps = {
     returnPage: To | null;
 };
@@ -16,10 +17,11 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const navigate = useNavigate();
     const [authStore, dispatchAuthStore] = useAuthStore();
     useEffect(() => {
-        if (authStore?.isLogging && returnPage) {
-            return navigate(returnPage);
+        if (authStore?.isLogging) {
+            return navigate(returnPage || '/');
         }
     }, [authStore]);
+    const [progressing, setProgressing] = useState(false);
     const [captcha, setCaptcha] = useState(false);
     const [account, setAccount] = useState('');
     const [password, setPassword] = useState('');
@@ -46,11 +48,14 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
         }
     };
     const signIn = async () => {
+        if (progressing) return false;
+        setProgressing(true);
         if (!account || !password || !captcha) return false;
         try {
             const url = `${BE_URL}:${BE_PORT}${API_ENDPOINT.user_login}`;
             const fetchRes = await fetch(url, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -61,18 +66,21 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
                 }),
             });
             const json = await fetchRes.json();
+            setProgressing(false);
             if (!fetchRes.ok) {
                 setErrorMessage(json.message);
                 return;
             }
-            return back();
+            dispatchAuthStore && dispatchAuthStore(loginUser(true, json.user));
+            // return back();
         } catch (error) {
+            setProgressing(false);
             setErrorMessage('Vui lòng thử đăng nhập lại trong giây lát.');
         }
         // dispatchAuthStore && dispatchAuthStore(payload);
     };
     const back = () => {
-        return navigate('/home');
+        return navigate('/');
     };
     return (
         <>
@@ -89,7 +97,7 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
             </div>
             <div className={clsx(styles.authForm)}>
                 <div className={clsx(styles.authForm__container)}>
-                    <span className={clsx(styles.authForm__title)}>
+                    <span className={clsx(styles.authForm__title, '!mb-8')}>
                         Đăng nhập
                     </span>
                     <div className={clsx(styles.authForm__content)}>
@@ -196,7 +204,11 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
                                 styles.btn__sign_in,
                             )}
                         >
-                            Đăng nhập
+                            {progressing ? (
+                                <CircularProgress color="inherit" />
+                            ) : (
+                                'Đăng nhập'
+                            )}
                         </button>
                         <div className={clsx(styles.content__quickSignIn)}>
                             <div className={clsx(styles.content__split)}>

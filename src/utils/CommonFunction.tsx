@@ -1,9 +1,13 @@
-function throttleFunction(func: () => void, delay: number) {
+function throttleFunction(
+    func: (params?: any) => void,
+    delay: number,
+    params?: any,
+) {
     let lastTime = 0;
     return function () {
         const now = new Date().getTime();
         if (now - lastTime >= delay) {
-            func();
+            func(params);
             lastTime = now;
         }
     };
