@@ -51,48 +51,46 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const [cookies, setCookie] = useCookies(['token']);
     useEffect(() => {
         const a_token = cookies.token;
-        if (authStore?.isLogging) {
-            const urlCheck = `${BE_URL}:${BE_PORT}${API_ENDPOINT.check_logging}`;
-            const checkIsLogging = fetch(urlCheck, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${a_token}`,
-                },
-            });
-            checkIsLogging
-                .then(async (r) => {
-                    if (!r.ok) {
-                        const r_token =
-                            window.localStorage.getItem('token') || undefined;
-                        if (r_token) {
-                            const urlRefreshToken = `${BE_URL}:${BE_PORT}${API_ENDPOINT.refresh_token}`;
-                            const res = await fetch(urlRefreshToken, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    Authorization: `Bearer ${r_token}`,
-                                },
+        const urlCheck = `${BE_URL}:${BE_PORT}${API_ENDPOINT.check_logging}`;
+        const checkIsLogging = fetch(urlCheck, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${a_token}`,
+            },
+        });
+        checkIsLogging
+            .then(async (r) => {
+                if (!r.ok) {
+                    const r_token =
+                        window.localStorage.getItem('token') || undefined;
+                    if (r_token) {
+                        const urlRefreshToken = `${BE_URL}:${BE_PORT}${API_ENDPOINT.refresh_token}`;
+                        const res = await fetch(urlRefreshToken, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${r_token}`,
+                            },
+                        });
+                        const { token } = await res.json();
+                        if (token) {
+                            setCookie('token', token, {
+                                maxAge: 18000, // 5 hour
+                                sameSite: 'none',
+                                secure: true,
+                                path: '/',
                             });
-                            const { token } = await res.json();
-                            if (token) {
-                                setCookie('token', token, {
-                                    maxAge: 18000, // 5 hour
-                                    sameSite: 'none',
-                                    secure: true,
-                                    path: '/',
-                                });
-                                back();
-                            } else throw new Error();
+                            back();
                         } else throw new Error();
-                    } else {
-                        back();
-                    }
-                })
-                .catch(() => {
-                    dispatchAuthStore && dispatchAuthStore(logoutUser());
-                });
-        }
+                    } else throw new Error();
+                } else {
+                    back();
+                }
+            })
+            .catch(() => {
+                dispatchAuthStore && dispatchAuthStore(logoutUser());
+            });
     }, []);
     const [sex, setSex] = useState('1');
     const [birth, setBirth] = useState(minAge);

@@ -9,6 +9,9 @@ import { PiUsersBold, PiUsersFill } from 'react-icons/pi';
 import { BsMusicPlayer, BsMusicPlayerFill } from 'react-icons/bs';
 import MiddleNav, { MiddleNavProps } from './MiddleNav';
 import Container from '../Common/Container';
+import useAuthStore from '@/src/hooks/useAuthStore';
+import LoginHeader from './LoginHeader';
+import { useNavigate } from 'react-router-dom';
 const MiddleNavApi: MiddleNavProps[] = [
     {
         name: 'Trang chủ',
@@ -31,6 +34,8 @@ const MiddleNavApi: MiddleNavProps[] = [
 ];
 type HeaderProps = {};
 const Header: React.FC<HeaderProps> = (props) => {
+    const [authStore, dispatchAuthStore] = useAuthStore();
+    if (!authStore?.isLogging) return <LoginHeader />;
     return (
         <div
             id="header"

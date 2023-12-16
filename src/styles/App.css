@@ -87,3 +87,12 @@ body {
 .message-group.my-text .status-icon:last-of-type {
     display: block;
 } */
+
+input:-webkit-autofill {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #000;
+}
+.dark input:-webkit-autofill {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: #fff;
+}
