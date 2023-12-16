@@ -3,33 +3,71 @@ import styles from './Auth.module.scss';
 import { Link, useNavigate, To } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import useAuthStore from '@/src/hooks/useAuthStore';
-import { loginUser } from '@/src/contexts/Auth/actions';
-import ReCAPTCHA from 'reaptcha';
+import { loginUser, logoutUser } from '@/src/contexts/Auth/actions';
 import FontIcon from '../Common/FontIcon';
 import { FacebookSvg, GoogleSvg } from '../Svg/';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '@/src/constant';
 import { throttleFunction } from '@/src/utils/CommonFunction';
 import { CircularProgress } from '@mui/material';
+import { useCookies } from 'react-cookie';
 export type AuthComponentProps = {
     returnPage: To | null;
 };
 const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const navigate = useNavigate();
     const [authStore, dispatchAuthStore] = useAuthStore();
+    const [cookies, setCookie] = useCookies(['token']);
     useEffect(() => {
+        const a_token = cookies.token;
         if (authStore?.isLogging) {
-            return navigate(returnPage || '/');
+            const urlCheck = `${BE_URL}:${BE_PORT}${API_ENDPOINT.check_logging}`;
+            const checkIsLogging = fetch(urlCheck, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${a_token}`,
+                },
+            });
+            checkIsLogging
+                .then(async (r) => {
+                    if (!r.ok) {
+                        const r_token =
+                            window.localStorage.getItem('token') || undefined;
+                        if (r_token) {
+                            const urlRefreshToken = `${BE_URL}:${BE_PORT}${API_ENDPOINT.refresh_token}`;
+                            const res = await fetch(urlRefreshToken, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${r_token}`,
+                                },
+                            });
+                            const { token } = await res.json();
+                            if (token) {
+                                setCookie('token', token, {
+                                    maxAge: 18000, // 5 hour
+                                    sameSite: 'none',
+                                    secure: true,
+                                    path: '/',
+                                });
+                                back();
+                            } else throw new Error();
+                        } else throw new Error();
+                    } else {
+                        console.log('here', returnPage);
+                        back();
+                    }
+                })
+                .catch(() => {
+                    dispatchAuthStore && dispatchAuthStore(logoutUser());
+                });
         }
-    }, [authStore]);
+    }, []);
     const [progressing, setProgressing] = useState(false);
-    const [captcha, setCaptcha] = useState(false);
     const [account, setAccount] = useState('');
     const [password, setPassword] = useState('');
     const [rememberPwd, setRememberPwd] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const handleVerifyCaptcha = () => {
-        return setCaptcha(true);
-    };
     const handleOnChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputName = e.target.name;
         const value = e.target.value;
@@ -50,12 +88,11 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const signIn = async () => {
         if (progressing) return false;
         setProgressing(true);
-        if (!account || !password || !captcha) return false;
+        if (!account || !password) return false;
         try {
             const url = `${BE_URL}:${BE_PORT}${API_ENDPOINT.user_login}`;
             const fetchRes = await fetch(url, {
                 method: 'POST',
-                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -71,16 +108,30 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
                 setErrorMessage(json.message);
                 return;
             }
+            if (rememberPwd) {
+                window.localStorage.setItem('token', json.r_token);
+                setCookie('token', json.a_token, {
+                    maxAge: 18000, // 5 hour
+                    sameSite: 'none',
+                    secure: true,
+                    path: '/',
+                });
+            } else {
+                setCookie('token', json.a_token, {
+                    sameSite: 'none',
+                    secure: true,
+                    path: '/',
+                });
+            }
             dispatchAuthStore && dispatchAuthStore(loginUser(true, json.user));
-            // return back();
+            back();
         } catch (error) {
             setProgressing(false);
             setErrorMessage('Vui lòng thử đăng nhập lại trong giây lát.');
         }
-        // dispatchAuthStore && dispatchAuthStore(payload);
     };
     const back = () => {
-        return navigate('/');
+        return returnPage && navigate(returnPage);
     };
     return (
         <>
@@ -182,18 +233,6 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
                             <label htmlFor="remember_pwd-input">
                                 Lưu tài khoản 30 ngày
                             </label>
-                        </div>
-                        <div
-                            className={clsx(
-                                styles.content__checkbox,
-                                'justify-center',
-                            )}
-                            title=""
-                        >
-                            <ReCAPTCHA
-                                sitekey="6LfV49knAAAAANk6u35i3cgbbn8EsK9IEqVNEJ5t"
-                                onVerify={handleVerifyCaptcha}
-                            ></ReCAPTCHA>
                         </div>
                         <button
                             onClick={throttleFunction(signIn, 2000)}

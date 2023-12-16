@@ -10,6 +10,8 @@ import { AuthComponentProps } from './Login';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '@/src/constant';
 import { throttleFunction } from '@/src/utils/CommonFunction';
 import { CircularProgress } from '@mui/material';
+import { logoutUser } from '@/src/contexts/Auth/actions';
+import { useCookies } from 'react-cookie';
 const defaultPlaceholder = {
     email: 'Địa chỉ email (*)',
     username: 'Tên tài khoản (*)',
@@ -46,11 +48,52 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const navigate = useNavigate();
     const [progressing, setProgressing] = useState(false);
     const [authStore, dispatchAuthStore] = useAuthStore();
+    const [cookies, setCookie] = useCookies(['token']);
     useEffect(() => {
-        if (authStore?.isLogging && returnPage) {
-            return navigate(returnPage);
+        const a_token = cookies.token;
+        if (authStore?.isLogging) {
+            const urlCheck = `${BE_URL}:${BE_PORT}${API_ENDPOINT.check_logging}`;
+            const checkIsLogging = fetch(urlCheck, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${a_token}`,
+                },
+            });
+            checkIsLogging
+                .then(async (r) => {
+                    if (!r.ok) {
+                        const r_token =
+                            window.localStorage.getItem('token') || undefined;
+                        if (r_token) {
+                            const urlRefreshToken = `${BE_URL}:${BE_PORT}${API_ENDPOINT.refresh_token}`;
+                            const res = await fetch(urlRefreshToken, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: `Bearer ${r_token}`,
+                                },
+                            });
+                            const { token } = await res.json();
+                            if (token) {
+                                setCookie('token', token, {
+                                    maxAge: 18000, // 5 hour
+                                    sameSite: 'none',
+                                    secure: true,
+                                    path: '/',
+                                });
+                                back();
+                            } else throw new Error();
+                        } else throw new Error();
+                    } else {
+                        back();
+                    }
+                })
+                .catch(() => {
+                    dispatchAuthStore && dispatchAuthStore(logoutUser());
+                });
         }
-    }, [authStore]);
+    }, []);
     const [sex, setSex] = useState('1');
     const [birth, setBirth] = useState(minAge);
     // Set default birth
@@ -339,7 +382,7 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
     }, [password]);
 
     const back = () => {
-        return navigate('/home');
+        return returnPage && navigate(returnPage);
     };
     return (
         <>

@@ -6,6 +6,7 @@ export const loginUser = (
     status: boolean,
     userInfo: UserDetail,
 ): LoginUserPayload => {
+    console.log('Đăng nhập thành công!');
     return {
         type: LOGIN_USER,
         payload: {
@@ -16,8 +17,12 @@ export const loginUser = (
 };
 
 export const logoutUser = (): LogoutUserPayload => {
+    console.log('Đăng xuất thành công.');
     return {
         type: LOGOUT_USER,
-        payload: defaultUserState,
+        payload: {
+            isLogging: false,
+            detail: {},
+        },
     };
 };
