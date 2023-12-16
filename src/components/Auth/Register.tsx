@@ -44,10 +44,13 @@ const minAge = {
     month: today.getUTCMonth() + 1,
     year: today.getUTCFullYear() - 11,
 };
-const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
+const Register: React.FC<AuthComponentProps> = ({
+    returnPage,
+    initErrorMessage = '',
+}) => {
     const navigate = useNavigate();
     const [progressing, setProgressing] = useState(false);
-    const [authStore, dispatchAuthStore] = useAuthStore();
+    const [, dispatchAuthStore] = useAuthStore();
     const [cookies, setCookie] = useCookies(['token']);
     useEffect(() => {
         const a_token = cookies.token;
@@ -108,7 +111,8 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [acceptEmail, setAcceptEmail] = useState(false);
-    const [globalErrorMessage, setGlobalErrorMessage] = useState('');
+    const [globalErrorMessage, setGlobalErrorMessage] =
+        useState(initErrorMessage);
 
     const [onFocusPassword, setOnFocusPassword] = useState(false);
     const changeFocus = (inputName: string, status: boolean) => {
@@ -382,10 +386,14 @@ const Register: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const back = () => {
         return returnPage && navigate(returnPage);
     };
+
+    const backToHome = () => {
+        navigate('/');
+    };
     return (
         <>
             <div className={clsx(styles.header)}>
-                <div className={clsx(styles.btn)} onClick={back}>
+                <div className={clsx(styles.btn)} onClick={backToHome}>
                     <FontIcon size={24} logoName={'close'}></FontIcon>
                 </div>
                 <Link

@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import Login from '@/src/components/Auth/Login';
 import Register from '@/src/components/Auth/Register';
 import { CircularProgress } from '@mui/material';
 const AuthPage: React.FC<{}> = () => {
+    const route = useLocation();
     const [search, setSearch] = useSearchParams('');
     const [accpept, setAccept] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(
+        route.state?.errorMessage || '',
+    );
     const t = useRef(search.get('t'));
     const returnPage = useRef(search.get('return'));
     useEffect(() => {
@@ -45,10 +49,16 @@ const AuthPage: React.FC<{}> = () => {
                 </div>
             )}
             {accpept && t.current === 'sign_in' && (
-                <Login returnPage={returnPage.current}></Login>
+                <Login
+                    returnPage={returnPage.current}
+                    initErrorMessage={errorMessage}
+                ></Login>
             )}
             {accpept && t.current === 'sign_up' && (
-                <Register returnPage={returnPage.current}></Register>
+                <Register
+                    returnPage={returnPage.current}
+                    initErrorMessage={errorMessage}
+                ></Register>
             )}
         </>
     );

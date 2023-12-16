@@ -12,11 +12,21 @@ import { CircularProgress } from '@mui/material';
 import { useCookies } from 'react-cookie';
 export type AuthComponentProps = {
     returnPage: To | null;
+    initErrorMessage?: string;
 };
-const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
+const Login: React.FC<AuthComponentProps> = ({
+    returnPage,
+    initErrorMessage = '',
+}) => {
     const navigate = useNavigate();
-    const [authStore, dispatchAuthStore] = useAuthStore();
+    const [, dispatchAuthStore] = useAuthStore();
     const [cookies, setCookie] = useCookies(['token']);
+    const [progressing, setProgressing] = useState(false);
+    const [account, setAccount] = useState('');
+    const [password, setPassword] = useState('');
+    const [rememberPwd, setRememberPwd] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(initErrorMessage);
+
     useEffect(() => {
         const a_token = cookies.token;
         const urlCheck = `${BE_URL}:${BE_PORT}${API_ENDPOINT.check_logging}`;
@@ -62,11 +72,7 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
                 dispatchAuthStore && dispatchAuthStore(logoutUser());
             });
     }, []);
-    const [progressing, setProgressing] = useState(false);
-    const [account, setAccount] = useState('');
-    const [password, setPassword] = useState('');
-    const [rememberPwd, setRememberPwd] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+
     const handleOnChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputName = e.target.name;
         const value = e.target.value;
@@ -132,10 +138,14 @@ const Login: React.FC<AuthComponentProps> = ({ returnPage }) => {
     const back = () => {
         return returnPage && navigate(returnPage);
     };
+
+    const backToHome = () => {
+        navigate('/');
+    };
     return (
         <>
             <div className={clsx(styles.header)}>
-                <div className={clsx(styles.btn)} onClick={back}>
+                <div className={clsx(styles.btn)} onClick={backToHome}>
                     <FontIcon size={24} logoName={'close'}></FontIcon>
                 </div>
                 <Link
