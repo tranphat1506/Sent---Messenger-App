@@ -1,5 +1,5 @@
-import { LOGIN_USER, LOGOUT_USER } from './constants';
-import { defaultUserState } from './reducer';
+import { LOGIN_USER, LOGOUT_USER } from '../auth/constants';
+import { defaultUserState } from '../auth/reducer';
 import { LoginUserPayload, LogoutUserPayload, UserDetail } from './types';
 
 export const loginUser = (
@@ -20,9 +20,6 @@ export const logoutUser = (): LogoutUserPayload => {
     console.log('Đăng xuất thành công.');
     return {
         type: LOGOUT_USER,
-        payload: {
-            isLogging: false,
-            detail: {},
-        },
+        payload: defaultUserState,
     };
 };

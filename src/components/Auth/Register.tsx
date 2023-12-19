@@ -10,7 +10,7 @@ import { AuthComponentProps } from './Login';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '@/src/constant';
 import { throttleFunction } from '@/src/utils/CommonFunction';
 import { CircularProgress } from '@mui/material';
-import { logoutUser } from '@/src/contexts/Auth/actions';
+import { logoutUser } from '@/src/contexts/auth/actions';
 import { useCookies } from 'react-cookie';
 const defaultPlaceholder = {
     email: 'Địa chỉ email (*)',
@@ -44,14 +44,11 @@ const minAge = {
     month: today.getUTCMonth() + 1,
     year: today.getUTCFullYear() - 11,
 };
-const Register: React.FC<AuthComponentProps> = ({
-    returnPage,
-    initErrorMessage = '',
-}) => {
+const Register: React.FC<AuthComponentProps> = ({ initErrorMessage = '' }) => {
     const navigate = useNavigate();
     const [progressing, setProgressing] = useState(false);
     const [, dispatchAuthStore] = useAuthStore();
-    const [cookies, setCookie] = useCookies(['token']);
+    const [cookies, setCookie, deleteCookie] = useCookies(['token']);
     useEffect(() => {
         const a_token = cookies.token;
         const urlCheck = `${BE_URL}:${BE_PORT}${API_ENDPOINT.check_logging}`;
@@ -92,6 +89,8 @@ const Register: React.FC<AuthComponentProps> = ({
                 }
             })
             .catch(() => {
+                deleteCookie('token');
+                window.localStorage.removeItem('token');
                 dispatchAuthStore && dispatchAuthStore(logoutUser());
             });
     }, []);
@@ -384,7 +383,7 @@ const Register: React.FC<AuthComponentProps> = ({
     }, [password]);
 
     const back = () => {
-        return returnPage && navigate(returnPage);
+        return navigate('/auth?t=sign_in');
     };
 
     const backToHome = () => {
@@ -394,18 +393,27 @@ const Register: React.FC<AuthComponentProps> = ({
         <>
             <div className={clsx(styles.header)}>
                 <div className={clsx(styles.btn)} onClick={backToHome}>
-                    <FontIcon size={24} logoName={'close'}></FontIcon>
+                    <FontIcon
+                        size={24}
+                        logoName={'close'}
+                        className="dark:text-white"
+                    ></FontIcon>
                 </div>
                 <Link
                     className={clsx(styles.btn, styles.btn__sign_in)}
-                    to={`/auth?t=sign_in&return=${returnPage}`}
+                    to={`/auth?t=sign_in`}
                 >
                     Đăng nhập
                 </Link>
             </div>
             <div className={clsx(styles.authForm)}>
                 <div className={clsx(styles.authForm__container)}>
-                    <span className={clsx(styles.authForm__title)}>
+                    <span
+                        className={clsx(
+                            styles.authForm__title,
+                            'dark:!text-white',
+                        )}
+                    >
                         Đăng ký
                     </span>
                     <span
@@ -413,6 +421,7 @@ const Register: React.FC<AuthComponentProps> = ({
                             styles.message__item,
                             styles.message__gray,
                             styles['message--show'],
+                            'dark:!text-white',
                         )}
                     >
                         (*) Bắt buộc
@@ -436,6 +445,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                 className={clsx(
                                     styles.content__displayName_input,
                                     styles.content__input,
+                                    'dark:!bg-[#444]',
                                 )}
                             >
                                 <label htmlFor="displayName-input">
@@ -444,7 +454,10 @@ const Register: React.FC<AuthComponentProps> = ({
                                         logoName={'person'}
                                         fill={1}
                                         color={'#3e3e3e'}
-                                        className={clsx(styles.icon)}
+                                        className={clsx(
+                                            styles.icon,
+                                            'dark:!text-white',
+                                        )}
                                     />
                                 </label>
                                 <input
@@ -453,6 +466,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                     id="displayName-input"
                                     name="displayName"
                                     type="text"
+                                    className="dark:!text-white"
                                     placeholder={defaultPlaceholder.displayName}
                                 />
                             </div>
@@ -461,22 +475,27 @@ const Register: React.FC<AuthComponentProps> = ({
                                 className={clsx(
                                     styles.content__sex_input,
                                     styles.content__input,
+                                    'dark:!bg-[#444]',
                                     'flex-col !items-start basis-2/5',
                                 )}
                             >
-                                <span className="text-sm leading-none text-gray-500">
+                                <span className="text-sm leading-none text-gray-500 dark:text-gray-300">
                                     Giới tính
                                 </span>
                                 <select
                                     onChange={handleOnChangeInput}
-                                    className="bg-transparent w-full"
+                                    className="bg-transparent w-full dark:!text-white outline-none"
                                     name="sex"
                                     id="sex-input"
                                     defaultValue={sex}
                                 >
                                     {sexDefine.map((value, index) => {
                                         return (
-                                            <option key={index} value={index}>
+                                            <option
+                                                className="dark:!text-black"
+                                                key={index}
+                                                value={index}
+                                            >
                                                 {value}
                                             </option>
                                         );
@@ -489,6 +508,7 @@ const Register: React.FC<AuthComponentProps> = ({
                             className={clsx(
                                 styles.content__email_input,
                                 styles.content__input,
+                                'dark:!bg-[#444]',
                             )}
                         >
                             <label htmlFor="email-input">
@@ -497,7 +517,10 @@ const Register: React.FC<AuthComponentProps> = ({
                                     logoName={'alternate_email'}
                                     fill={1}
                                     color={'#3e3e3e'}
-                                    className={clsx(styles.icon)}
+                                    className={clsx(
+                                        styles.icon,
+                                        'dark:!text-white',
+                                    )}
                                 />
                             </label>
                             <input
@@ -506,6 +529,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                 id="email-input"
                                 name="email"
                                 type="text"
+                                className="dark:!text-white"
                                 placeholder={defaultPlaceholder.email}
                             />
                         </div>
@@ -514,6 +538,7 @@ const Register: React.FC<AuthComponentProps> = ({
                             className={clsx(
                                 styles.content__username_input,
                                 styles.content__input,
+                                'dark:!bg-[#444]',
                             )}
                         >
                             <label htmlFor="username-input">
@@ -522,7 +547,10 @@ const Register: React.FC<AuthComponentProps> = ({
                                     logoName={'badge'}
                                     fill={1}
                                     color={'#3e3e3e'}
-                                    className={clsx(styles.icon)}
+                                    className={clsx(
+                                        styles.icon,
+                                        'dark:!text-white',
+                                    )}
                                 />
                             </label>
                             <input
@@ -534,6 +562,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                 id="username-input"
                                 name="username"
                                 type="text"
+                                className="dark:!text-white"
                                 placeholder={defaultPlaceholder.username}
                                 autoComplete="username"
                             />
@@ -543,6 +572,7 @@ const Register: React.FC<AuthComponentProps> = ({
                             className={clsx(
                                 styles.content__password_input,
                                 styles.content__input,
+                                'dark:!bg-[#444]',
                             )}
                         >
                             <label htmlFor="password-input">
@@ -551,7 +581,10 @@ const Register: React.FC<AuthComponentProps> = ({
                                     logoName={'key'}
                                     fill={1}
                                     color={'#3e3e3e'}
-                                    className={clsx(styles.icon)}
+                                    className={clsx(
+                                        styles.icon,
+                                        'dark:!text-white',
+                                    )}
                                 />
                             </label>
                             <input
@@ -562,14 +595,19 @@ const Register: React.FC<AuthComponentProps> = ({
                                 name="password"
                                 type="password"
                                 autoComplete="new-password"
+                                className="dark:!text-white"
                                 placeholder={defaultPlaceholder.password}
                             />
                         </div>
                         {onFocusPassword && (
                             <span
-                                className={clsx(styles.message__item, {
-                                    [styles['message--show']]: 1,
-                                })}
+                                className={clsx(
+                                    styles.message__item,
+                                    'dark:!text-white',
+                                    {
+                                        [styles['message--show']]: 1,
+                                    },
+                                )}
                             >
                                 Mật khẩu phải:
                                 <span
@@ -597,7 +635,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                 styles.message__item,
                                 styles.message__gray,
                                 styles['message--show'],
-                                '!mt-4',
+                                '!mt-4 dark:!text-white',
                             )}
                         >
                             (*) Sinh nhật
@@ -607,15 +645,16 @@ const Register: React.FC<AuthComponentProps> = ({
                                 className={clsx(
                                     styles.content__birth_input,
                                     styles.content__input,
+                                    'dark:!bg-[#444]',
                                     'flex flex-col !items-start !mt-2',
                                 )}
                             >
-                                <span className="text-sm leading-none text-gray-500">
+                                <span className="text-sm leading-none text-gray-500 dark:text-gray-300">
                                     Ngày
                                 </span>
                                 <select
                                     ref={dBirthRef}
-                                    className="bg-transparent w-full"
+                                    className="bg-transparent w-full dark:!text-white outline-none"
                                     name="dayOfBirth"
                                     id="dayOfBirth-input"
                                     autoComplete="bday-day"
@@ -625,6 +664,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                     {[...Array(31)].map((_, index) => {
                                         return (
                                             <option
+                                                className="dark:!text-black"
                                                 key={index}
                                                 value={index + 1}
                                             >
@@ -639,14 +679,15 @@ const Register: React.FC<AuthComponentProps> = ({
                                 className={clsx(
                                     styles.content__birth_input,
                                     styles.content__input,
+                                    'dark:!bg-[#444]',
                                     'flex flex-col !items-start !mt-2',
                                 )}
                             >
-                                <span className="text-sm leading-none text-gray-500">
+                                <span className="text-sm leading-none text-gray-500 dark:text-gray-300">
                                     Tháng
                                 </span>
                                 <select
-                                    className="bg-transparent w-full"
+                                    className="bg-transparent w-full dark:!text-white outline-none"
                                     name="monthOfBirth"
                                     id="monthOfBirth-input"
                                     autoComplete="bday-month"
@@ -658,6 +699,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                             (monthInString, index) => {
                                                 return (
                                                     <option
+                                                        className="dark:!text-black"
                                                         key={index}
                                                         value={index + 1}
                                                     >
@@ -674,14 +716,15 @@ const Register: React.FC<AuthComponentProps> = ({
                                 className={clsx(
                                     styles.content__birth_input,
                                     styles.content__input,
+                                    'dark:!bg-[#444]',
                                     'flex flex-col !items-start !mt-2',
                                 )}
                             >
-                                <span className="text-sm leading-none text-gray-500">
+                                <span className="text-sm leading-none text-gray-500 dark:text-gray-300">
                                     Năm
                                 </span>
                                 <select
-                                    className="bg-transparent w-full"
+                                    className="bg-transparent w-full dark:!text-white outline-none"
                                     name="yearOfBirth"
                                     id="yearOfBirth-input"
                                     autoComplete="bday-year"
@@ -693,6 +736,7 @@ const Register: React.FC<AuthComponentProps> = ({
                                         .map((_, index) => {
                                             return (
                                                 <option
+                                                    className="dark:!text-black"
                                                     key={index}
                                                     value={
                                                         maxAge.year + index + 1
@@ -707,7 +751,10 @@ const Register: React.FC<AuthComponentProps> = ({
                         </div>
                         <div
                             ref={acpEmailRef}
-                            className={clsx(styles.content__checkbox)}
+                            className={clsx(
+                                styles.content__checkbox,
+                                'dark:!text-white',
+                            )}
                             title=""
                         >
                             <input
@@ -754,7 +801,14 @@ const Register: React.FC<AuthComponentProps> = ({
                         <div className={clsx(styles.content__quickSignIn)}>
                             <div className={clsx(styles.content__split)}>
                                 <span className={clsx(styles.bar)}></span>
-                                <span className={clsx(styles.title)}>hoặc</span>
+                                <span
+                                    className={clsx(
+                                        styles.title,
+                                        '!text-sky-400',
+                                    )}
+                                >
+                                    hoặc
+                                </span>
                                 <span className={clsx(styles.bar)}></span>
                             </div>
                             <div className={clsx(styles.options)}>
@@ -780,22 +834,43 @@ const Register: React.FC<AuthComponentProps> = ({
                                 </button>
                             </div>
                         </div>
-                        <div className={clsx(styles.content__privacy)}>
+                        <div
+                            className={clsx(
+                                styles.content__privacy,
+                                'dark:!text-white',
+                            )}
+                        >
                             Bằng cách tiếp tục, bạn đồng ý với{' '}
-                            <Link to={'/help/terms'}>Điều khoản Sử dụng</Link>{' '}
+                            <Link className="!text-sky-400" to={'/help/terms'}>
+                                Điều khoản Sử dụng
+                            </Link>{' '}
                             và{' '}
-                            <Link to={'/help/privacy'}>
+                            <Link
+                                className="!text-sky-400"
+                                to={'/help/privacy'}
+                            >
                                 Chính sách Quyền riêng tư
                             </Link>{' '}
                             của chúng tôi.
                         </div>
-                        <div className={clsx(styles.content__privacy)}>
+                        <div
+                            className={clsx(
+                                styles.content__privacy,
+                                'dark:!text-white',
+                            )}
+                        >
                             Trang này được bảo vệ bởi tập đoàn reCAPTCHA và theo{' '}
-                            <a href="https://policies.google.com/privacy">
+                            <a
+                                className="!text-sky-400"
+                                href="https://policies.google.com/privacy"
+                            >
                                 Chính sách bảo mật
                             </a>{' '}
                             và{' '}
-                            <a href="https://policies.google.com/terms">
+                            <a
+                                className="!text-sky-400"
+                                href="https://policies.google.com/terms"
+                            >
                                 Điều khoản dịch vụ
                             </a>{' '}
                             của Google.

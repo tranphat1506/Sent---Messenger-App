@@ -11,7 +11,7 @@ import MiddleNav, { MiddleNavProps } from './MiddleNav';
 import Container from '../Common/Container';
 import useAuthStore from '@/src/hooks/useAuthStore';
 import LoginHeader from './LoginHeader';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 const MiddleNavApi: MiddleNavProps[] = [
     {
         name: 'Trang chủ',
@@ -33,8 +33,8 @@ const MiddleNavApi: MiddleNavProps[] = [
     },
 ];
 type HeaderProps = {};
-const Header: React.FC<HeaderProps> = (props) => {
-    const [authStore, dispatchAuthStore] = useAuthStore();
+const Header: React.FC<HeaderProps> = ({}) => {
+    const [authStore] = useAuthStore();
     if (!authStore?.isLogging) return <LoginHeader />;
     return (
         <div
@@ -50,7 +50,10 @@ const Header: React.FC<HeaderProps> = (props) => {
                     <Menu />
                     <Notification notiCount={10} />
                     <Messenger on={true} />
-                    <UserButton />
+                    <UserButton
+                        avatarSrc={authStore.detail.avt_url}
+                        userName={authStore.detail.username}
+                    />
                 </div>
             </Container>
             <Container className="!max-w-none flex-nowrap justify-center items-center gap-4 h-full hidden lg:flex absolute top-0 left-0">

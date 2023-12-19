@@ -2,14 +2,23 @@ import { HomePage } from '../pages/Home';
 import { MessengerPage } from '../pages/Messenger';
 import { AuthPage } from '../pages/Auth';
 import DefaultLayout from '../components/Layouts/Default';
-type Router = Route[] | [];
-type Route = {
+type Router = RouteConfigProps[] | [];
+export type RouteConfigProps = {
     path: string;
     page: React.FC;
     layout: React.FC;
-    props: {} | null;
+    props: any | null;
 };
 const publicRoutes: Router = [
+    {
+        path: '/auth',
+        page: AuthPage,
+        layout: DefaultLayout,
+        props: { hide: ['footer', 'header'] },
+    },
+];
+
+const privateRoutes: Router = [
     {
         path: '/',
         page: HomePage,
@@ -22,14 +31,6 @@ const publicRoutes: Router = [
         layout: DefaultLayout,
         props: { hide: 'footer' },
     },
-    {
-        path: '/auth',
-        page: AuthPage,
-        layout: DefaultLayout,
-        props: { hide: ['footer', 'header'] },
-    },
 ];
-
-const privateRoutes: Router = [];
 
 export { publicRoutes, privateRoutes };

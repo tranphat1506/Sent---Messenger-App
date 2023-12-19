@@ -1,6 +1,6 @@
 import IconButton from '@/src/components/Buttons/IconButton';
 import MessengerLayout from '@/src/components/Layouts/MessengerLayout';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
     BiDotsHorizontalRounded,
@@ -11,8 +11,18 @@ import { IoArrowBackSharp } from 'react-icons/io5';
 import { Avatar, Typography } from '@mui/material';
 import { BsBellSlashFill } from 'react-icons/bs';
 import clsx from 'clsx';
+import useAuthStore from '@/src/hooks/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 type MessengerPageProps = {};
 const MessengerPage: React.FC<MessengerPageProps> = () => {
+    const navigate = useNavigate();
+    const [authStore] = useAuthStore();
+
+    useEffect(() => {
+        if (!authStore?.isLogging) {
+            navigate(`/auth?t=sign_in&return=${window.location.href}`);
+        }
+    }, []);
     return (
         <div className="max-h-screen h-auto pt-[80px] dark:bg-[#2c2c2c]">
             <MessengerLayout

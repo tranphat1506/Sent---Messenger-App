@@ -1,32 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import Login from '@/src/components/Auth/Login';
 import Register from '@/src/components/Auth/Register';
-import { CircularProgress } from '@mui/material';
 const AuthPage: React.FC<{}> = () => {
-    const route = useLocation();
+    const location = useLocation();
     const [search, setSearch] = useSearchParams('');
-    const [accpept, setAccept] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(
-        route.state?.errorMessage || '',
-    );
-    const t = useRef(search.get('t'));
-    const returnPage = useRef(search.get('return'));
+    const [errorMessage] = useState(location.state?.errorMessage || '');
+    let t = useRef(search.get('t'));
+    let returnPage = useRef({
+        pathName: location.state?.from
+            ? location.state?.from?.pathname + location.state?.from?.search
+            : false,
+        originalLocation: location.state?.from,
+    });
     useEffect(() => {
-        document
-            ?.querySelector('body')
-            ?.style.setProperty('backgroundColor', '#fff');
-        return () => {
-            document
-                ?.querySelector('body')
-                ?.style.setProperty('backgroundColor', 'unset');
-        };
-    }, []);
-    useEffect(() => {
-        returnPage.current = search.get('return');
         t.current = search.get('t');
-        if (!returnPage.current || returnPage.current.includes('/auth'))
-            returnPage.current = '/';
+        returnPage.current = {
+            pathName: location.state?.from
+                ? location.state?.from?.pathname + location.state?.from?.search
+                : false,
+            originalLocation: location.state?.from,
+        };
         switch (t.current) {
             case 'sign_out':
                 t.current = 'sign_out';
@@ -38,23 +32,17 @@ const AuthPage: React.FC<{}> = () => {
                 t.current = 'sign_in';
                 break;
         }
-        setSearch(`t=${t.current}&return=${returnPage.current}`);
-        setAccept(true);
+        setSearch(`t=${t.current}&return=${returnPage.current.pathName}`);
     }, [search]);
     return (
         <>
-            {!accpept && (
-                <div className="w-screen h-screen flex justify-center items-center dark:bg-[#222] text-sky-400">
-                    <CircularProgress color="inherit" size={70} />
-                </div>
-            )}
-            {accpept && t.current === 'sign_in' && (
+            {t.current === 'sign_in' && (
                 <Login
                     returnPage={returnPage.current}
                     initErrorMessage={errorMessage}
                 ></Login>
             )}
-            {accpept && t.current === 'sign_up' && (
+            {t.current === 'sign_up' && (
                 <Register
                     returnPage={returnPage.current}
                     initErrorMessage={errorMessage}

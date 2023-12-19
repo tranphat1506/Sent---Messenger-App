@@ -5,7 +5,7 @@ import { memo, useState } from 'react';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '@/src/constant';
 import { useCookies } from 'react-cookie';
 import useAuthStore from '@/src/hooks/useAuthStore';
-import { loginUser } from '@/src/contexts/Auth/actions';
+import { loginUser } from '@/src/contexts/auth/actions';
 import { throttleFunction } from '@/src/utils/CommonFunction';
 
 const LoginHeader = () => {
@@ -13,7 +13,7 @@ const LoginHeader = () => {
     const [password, setPassword] = useState('');
     const [rememberPwd, setRememberPwd] = useState(false);
     const [, setCookie] = useCookies(['token']);
-    const [, dispatchAuthStore] = useAuthStore();
+    const [authStore, dispatchAuthStore] = useAuthStore();
     const navigate = useNavigate();
 
     const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +77,7 @@ const LoginHeader = () => {
                 });
             }
             dispatchAuthStore && dispatchAuthStore(loginUser(true, json.user));
-            reloadPage();
+            // reloadPage();
         } catch (error) {
             navigate(`/auth?t=sign_in&return=${window.location.href}`, {
                 state: {
@@ -96,7 +96,7 @@ const LoginHeader = () => {
         >
             <Container className="flex flex-nowrap justify-between px-4 lg:px-8 ">
                 <div className="z-10 inline-flex items-center">
-                    <LogoIcon className="max-[480px]:!hidden" />
+                    <LogoIcon />
                 </div>
                 <div className="z-10 items-center gap-4 hidden lg:inline-flex">
                     <div className="flex flex-col items-end">

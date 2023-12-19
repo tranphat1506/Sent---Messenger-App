@@ -1,6 +1,6 @@
 import { useReducer } from 'react';
-import Context from './Context';
-import reducer, { defaultUserState } from './reducer';
+import Context from '../auth/Context';
+import reducer, { defaultUserState } from '../auth/reducer';
 
 interface ProviderProps {
     children: React.ReactNode;

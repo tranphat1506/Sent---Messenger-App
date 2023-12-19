@@ -23,7 +23,7 @@
     "react-router-dom": "^6.15.0",
     "reaptcha": "^1.12.1",
     "sass": "^1.66.1",
-    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
     "underscore": "^1.13.6"
   },
   "devDependencies": {

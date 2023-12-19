@@ -6,4 +6,5 @@ export const API_ENDPOINT = {
     verify_email: '/api/auth/verify?method=email',
     check_logging: '/api/auth/isLogin',
     refresh_token: '/api/auth/refresh-token',
+    get_my_info: '/api/user/me',
 };

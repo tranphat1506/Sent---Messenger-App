@@ -25,3 +25,9 @@
     --deny: #ff4949;
     --accept: #67d850;
 }
+.dark body {
+    background-color: #222;
+}
+body {
+    background-color: #fff;
+}

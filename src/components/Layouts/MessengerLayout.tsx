@@ -2,7 +2,6 @@ import { MessageCard } from '@/src/pages/Messenger/page';
 import { useState, useEffect, Fragment } from 'react';
 import MessageContainer from '../Message/MessageContainer';
 import { room_list } from '../Message/MessageFakeHistory.json';
-import useUser from '@/src/hooks/useAuthStore';
 
 type MessengerLayoutProps = {
     MessengerTitle: React.ReactNode;
@@ -25,8 +24,6 @@ const MessengerLayout: React.FC<MessengerLayoutProps> = ({
         if (id === roomDetail?.room_id) return false;
         setRoomDetail({ ...room_list[id as keyof typeof room_list] });
     };
-    const [currentUser, dispatch] = useUser();
-    console.log(currentUser);
     return (
         <div className="w-screen h-auto flex justify-between">
             <div className="flex flex-col dark:bg-[#222] max-w-[380px] min-w-[380px] h-[calc(100vh-80px)] border-r-[1px] dark:border-[#555]">

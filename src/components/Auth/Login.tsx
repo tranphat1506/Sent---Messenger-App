@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import styles from './Auth.module.scss';
-import { Link, useNavigate, To } from 'react-router-dom';
+import { Link, useNavigate, Location } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import useAuthStore from '@/src/hooks/useAuthStore';
-import { loginUser, logoutUser } from '@/src/contexts/Auth/actions';
+import { loginUser, logoutUser } from '@/src/contexts/auth/actions';
 import FontIcon from '../Common/FontIcon';
 import { FacebookSvg, GoogleSvg } from '../Svg/';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '@/src/constant';
@@ -11,7 +11,10 @@ import { throttleFunction } from '@/src/utils/CommonFunction';
 import { CircularProgress } from '@mui/material';
 import { useCookies } from 'react-cookie';
 export type AuthComponentProps = {
-    returnPage: To | null;
+    returnPage: {
+        pathName: string;
+        originalLocation: Location;
+    } | null;
     initErrorMessage?: string;
 };
 const Login: React.FC<AuthComponentProps> = ({
@@ -20,7 +23,7 @@ const Login: React.FC<AuthComponentProps> = ({
 }) => {
     const navigate = useNavigate();
     const [, dispatchAuthStore] = useAuthStore();
-    const [cookies, setCookie] = useCookies(['token']);
+    const [cookies, setCookie, deleteCookie] = useCookies(['token']);
     const [progressing, setProgressing] = useState(false);
     const [account, setAccount] = useState('');
     const [password, setPassword] = useState('');
@@ -43,7 +46,6 @@ const Login: React.FC<AuthComponentProps> = ({
                     const r_token =
                         window.localStorage.getItem('token') || undefined;
                     if (r_token) {
-                        console.log(r_token);
                         const urlRefreshToken = `${BE_URL}:${BE_PORT}${API_ENDPOINT.refresh_token}`;
                         const res = await fetch(urlRefreshToken, {
                             method: 'POST',
@@ -60,15 +62,16 @@ const Login: React.FC<AuthComponentProps> = ({
                                 secure: true,
                                 path: '/',
                             });
-                            back();
+                            return back();
                         } else throw new Error();
                     } else throw new Error();
                 } else {
-                    console.log('here', returnPage);
                     back();
                 }
             })
             .catch(() => {
+                deleteCookie('token');
+                window.localStorage.removeItem('token');
                 dispatchAuthStore && dispatchAuthStore(logoutUser());
             });
     }, []);
@@ -92,6 +95,7 @@ const Login: React.FC<AuthComponentProps> = ({
     };
     const signIn = async () => {
         if (progressing) return false;
+        setErrorMessage('');
         setProgressing(true);
         if (!account || !password) return false;
         try {
@@ -129,14 +133,19 @@ const Login: React.FC<AuthComponentProps> = ({
                 });
             }
             dispatchAuthStore && dispatchAuthStore(loginUser(true, json.user));
-            back();
+            return back();
         } catch (error) {
+            console.log(error);
             setProgressing(false);
             setErrorMessage('Vui lòng thử đăng nhập lại trong giây lát.');
         }
     };
     const back = () => {
-        return returnPage && navigate(returnPage);
+        returnPage?.pathName
+            ? navigate(returnPage.pathName, {
+                  state: returnPage.originalLocation?.state,
+              })
+            : backToHome();
     };
 
     const backToHome = () => {
@@ -146,18 +155,28 @@ const Login: React.FC<AuthComponentProps> = ({
         <>
             <div className={clsx(styles.header)}>
                 <div className={clsx(styles.btn)} onClick={backToHome}>
-                    <FontIcon size={24} logoName={'close'}></FontIcon>
+                    <FontIcon
+                        size={24}
+                        logoName={'close'}
+                        className="dark:text-white"
+                    ></FontIcon>
                 </div>
                 <Link
                     className={clsx(styles.btn, styles.btn__sign_up)}
-                    to={`/auth?t=sign_up&return=${returnPage}`}
+                    to={`/auth?t=sign_up`}
+                    state={{ from: returnPage?.originalLocation }}
                 >
                     Đăng ký
                 </Link>
             </div>
             <div className={clsx(styles.authForm)}>
                 <div className={clsx(styles.authForm__container)}>
-                    <span className={clsx(styles.authForm__title, '!mb-8')}>
+                    <span
+                        className={clsx(
+                            styles.authForm__title,
+                            '!mb-8 dark:!text-white',
+                        )}
+                    >
                         Đăng nhập
                     </span>
                     <div className={clsx(styles.authForm__content)}>
@@ -177,6 +196,7 @@ const Login: React.FC<AuthComponentProps> = ({
                             className={clsx(
                                 styles.content__account_input,
                                 styles.content__input,
+                                'dark:!bg-[#444]',
                             )}
                         >
                             <FontIcon
@@ -184,9 +204,13 @@ const Login: React.FC<AuthComponentProps> = ({
                                 logoName={'badge'}
                                 fill={1}
                                 color={'#3e3e3e'}
-                                className={clsx(styles.icon)}
+                                className={clsx(
+                                    styles.icon,
+                                    'dark:!text-white',
+                                )}
                             />
                             <input
+                                className="dark:text-white"
                                 onChange={handleOnChangeInput}
                                 id="account-input"
                                 name="username"
@@ -199,6 +223,7 @@ const Login: React.FC<AuthComponentProps> = ({
                             className={clsx(
                                 styles.content__password_input,
                                 styles.content__input,
+                                'dark:!bg-[#444]',
                             )}
                         >
                             <FontIcon
@@ -206,9 +231,13 @@ const Login: React.FC<AuthComponentProps> = ({
                                 logoName={'key'}
                                 fill={1}
                                 color={'#3e3e3e'}
-                                className={clsx(styles.icon)}
+                                className={clsx(
+                                    styles.icon,
+                                    'dark:!text-white',
+                                )}
                             />
                             <input
+                                className="dark:text-white"
                                 onChange={handleOnChangeInput}
                                 id="password-input"
                                 name="password"
@@ -220,8 +249,10 @@ const Login: React.FC<AuthComponentProps> = ({
                                 className={clsx(
                                     styles['icon--last'],
                                     styles.content__forgot_password,
+                                    'dark:!text-sky-400 font-NunitoMedium',
                                 )}
-                                to={`/auth?t=forgot&return=${returnPage}`}
+                                to={`/auth?t=forgot`}
+                                state={{ from: returnPage?.originalLocation }}
                             >
                                 Quên?
                             </Link>
@@ -239,7 +270,10 @@ const Login: React.FC<AuthComponentProps> = ({
                                 type="checkbox"
                                 onChange={handleOnChangeInput}
                             />
-                            <label htmlFor="remember_pwd-input">
+                            <label
+                                htmlFor="remember_pwd-input"
+                                className="dark:text-white"
+                            >
                                 Lưu tài khoản 30 ngày
                             </label>
                         </div>
@@ -261,7 +295,14 @@ const Login: React.FC<AuthComponentProps> = ({
                         <div className={clsx(styles.content__quickSignIn)}>
                             <div className={clsx(styles.content__split)}>
                                 <span className={clsx(styles.bar)}></span>
-                                <span className={clsx(styles.title)}>hoặc</span>
+                                <span
+                                    className={clsx(
+                                        styles.title,
+                                        '!text-sky-400',
+                                    )}
+                                >
+                                    hoặc
+                                </span>
                                 <span className={clsx(styles.bar)}></span>
                             </div>
                             <div className={clsx(styles.options)}>
@@ -287,22 +328,43 @@ const Login: React.FC<AuthComponentProps> = ({
                                 </button>
                             </div>
                         </div>
-                        <div className={clsx(styles.content__privacy)}>
+                        <div
+                            className={clsx(
+                                styles.content__privacy,
+                                'dark:!text-white',
+                            )}
+                        >
                             Bằng cách tiếp tục, bạn đồng ý với{' '}
-                            <Link to={'/help/terms'}>Điều khoản Sử dụng</Link>{' '}
+                            <Link className="!text-sky-400" to={'/help/terms'}>
+                                Điều khoản Sử dụng
+                            </Link>{' '}
                             và{' '}
-                            <Link to={'/help/privacy'}>
+                            <Link
+                                className="!text-sky-400"
+                                to={'/help/privacy'}
+                            >
                                 Chính sách Quyền riêng tư
                             </Link>{' '}
                             của chúng tôi.
                         </div>
-                        <div className={clsx(styles.content__privacy)}>
+                        <div
+                            className={clsx(
+                                styles.content__privacy,
+                                'dark:!text-white',
+                            )}
+                        >
                             Trang này được bảo vệ bởi tập đoàn reCAPTCHA và theo{' '}
-                            <a href="https://policies.google.com/privacy">
+                            <a
+                                className="!text-sky-400"
+                                href="https://policies.google.com/privacy"
+                            >
                                 Chính sách bảo mật
                             </a>{' '}
                             và{' '}
-                            <a href="https://policies.google.com/terms">
+                            <a
+                                className="!text-sky-400"
+                                href="https://policies.google.com/terms"
+                            >
                                 Điều khoản dịch vụ
                             </a>{' '}
                             của Google.
