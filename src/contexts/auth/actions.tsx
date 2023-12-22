@@ -1,5 +1,5 @@
-import { LOGIN_USER, LOGOUT_USER } from '../auth/constants';
-import { defaultUserState } from '../auth/reducer';
+import { LOGIN_USER, LOGOUT_USER } from './constants';
+import { defaultUserState } from './reducer';
 import { LoginUserPayload, LogoutUserPayload, UserDetail } from './types';
 
 export const loginUser = (

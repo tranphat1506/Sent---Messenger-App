@@ -1,4 +1,4 @@
-import { LOGIN_USER, LOGOUT_USER } from '../auth/constants';
+import { LOGIN_USER, LOGOUT_USER } from './constants';
 import { UserPayload, UserState } from './types';
 
 const defaultUserState: UserState = {
