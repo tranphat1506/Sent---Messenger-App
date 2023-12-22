@@ -35,19 +35,13 @@ const MessengerLayout: React.FC<MessengerLayoutProps> = ({
                                 const room = roomList[roomId];
                                 if (!room)
                                     return <Fragment key={roomId}></Fragment>;
-                                const lastMessage =
-                                    room.message_details.history[
-                                        room.message_details.total_message
-                                    ];
-                                if (!lastMessage)
-                                    return <Fragment key={roomId}></Fragment>;
                                 return (
                                     <MessageCard
                                         key={roomId}
+                                        roomAvt={room.avt_src}
                                         onClick={handleChangeRoom(roomId)}
                                         displayName={room.display_name}
-                                        message={lastMessage.message}
-                                        messageTime={lastMessage.time}
+                                        message_details={room.message_details}
                                         disableNotify={true}
                                         status={{
                                             iAmSeen: false,

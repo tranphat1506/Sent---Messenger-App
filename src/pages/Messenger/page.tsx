@@ -13,6 +13,10 @@ import { BsBellSlashFill } from 'react-icons/bs';
 import clsx from 'clsx';
 import useAuthStore from '@/src/hooks/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import {
+    Time2StringPastTime,
+    symbolString2Vietnamese,
+} from '@/src/utils/FormatTime';
 type MessengerPageProps = {};
 const MessengerPage: React.FC<MessengerPageProps> = () => {
     const navigate = useNavigate();
@@ -83,9 +87,9 @@ const MessengerTitle: React.FC<MessengerTitleProps> = (props) => {
 };
 
 type MessageCardProps = {
+    roomAvt?: string;
     displayName?: string;
-    message?: string;
-    messageTime?: string;
+    message_details?: any;
     disableNotify: boolean;
     status: {
         seenList: string[];
@@ -94,13 +98,27 @@ type MessageCardProps = {
     onClick?: React.MouseEventHandler;
 };
 export const MessageCard: React.FC<MessageCardProps> = (props) => {
+    const totalMessage = props.message_details.total_message;
+    const lastMessage = !totalMessage
+        ? null
+        : props.message_details.history[totalMessage];
+    const timeParse2String = lastMessage
+        ? Time2StringPastTime(lastMessage.time)
+        : null;
+    const pastTime = `${timeParse2String?.time} ${symbolString2Vietnamese(
+        timeParse2String?.symbol,
+    )}`;
     return (
         <span className="left-message relative flex items-center">
             <div
                 onClick={props.onClick}
                 className="w-full cursor-pointer flex gap-3 items-center p-3 rounded-xl dark:hover:bg-[#ffffff09] hover:bg-[#00000009]"
             >
-                <Avatar className="!w-12 !h-12" />
+                <Avatar
+                    className="!w-12 !h-12"
+                    src={props.roomAvt}
+                    alt={`${props.displayName} avatar`}
+                />
                 <div className="flex w-full flex-col">
                     {/* Name */}
                     <Typography
@@ -122,7 +140,7 @@ export const MessageCard: React.FC<MessageCardProps> = (props) => {
                                     !props.status.iAmSeen,
                             })}
                         >
-                            {props.message || ''}
+                            {lastMessage ? lastMessage.message : ''}
                         </Typography>
                         <LuDot className="text-[#999]" />
                         <Typography
@@ -133,7 +151,7 @@ export const MessageCard: React.FC<MessageCardProps> = (props) => {
                             className="!text-[#999]"
                             whiteSpace={'nowrap'}
                         >
-                            {props.messageTime}
+                            {lastMessage ? pastTime : ''}
                         </Typography>
                     </div>
                 </div>

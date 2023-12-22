@@ -1,71 +1,38 @@
 import { useCallback, useEffect, useState } from 'react';
 import Context from './Context';
-import io, { Socket } from 'socket.io-client';
+import io, { ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 import { useCookies } from 'react-cookie';
 export interface SocketProviderProps {
     children: React.ReactNode;
 }
 export type SocketState = { [namespace: string]: Socket };
-export type AddSocket = ({
-    namespace,
-    isPrivate,
-}: {
-    namespace: string;
-    isPrivate: boolean;
-}) => {
-    status: number;
-    message: string;
-    socket: Socket | null;
-};
+export type AddSocket = (
+    namespace: string,
+    socketOptions?: Partial<ManagerOptions & SocketOptions>,
+) => Socket | undefined;
 const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const [sockets, setSocket] = useState<SocketState>({});
-    const [cookies] = useCookies(['token']);
 
     const addSocket = useCallback<AddSocket>(
-        ({ namespace, isPrivate }) => {
-            if (!namespace)
-                return {
-                    status: 400,
-                    message: 'Invalid namespace!',
-                    socket: null,
-                };
-            if (!cookies.token && isPrivate)
-                return { status: 401, message: 'Unauthorized!', socket: null };
-            if (!!sockets[namespace]) {
-                return {
-                    status: 200,
-                    message: `Success connect to ${namespace}`,
-                    socket: sockets[namespace],
-                };
-            }
+        (namespace, socketOptions) => {
+            if (!namespace) throw new Error('Namespace undefinded.');
+            if (!!sockets[namespace]) sockets[namespace].disconnect();
             const newSocket = io(namespace, {
-                extraHeaders: {
-                    Authorization: `Bearer ${cookies.token}`,
-                },
-                withCredentials: true,
-                autoConnect: true,
+                ...socketOptions,
+                autoConnect: false,
             });
             setSocket({ ...sockets, [namespace]: newSocket });
-            return {
-                status: 200,
-                message: `Success connect to ${namespace}`,
-                socket: newSocket,
-            };
+            return newSocket;
         },
-        [sockets, cookies],
+        [sockets],
     );
     useEffect(() => {
-        if (!cookies.token) {
-            Object.keys(sockets).forEach((namespace) => {
-                sockets[namespace].disconnect();
-            });
-        }
         return () => {
             Object.keys(sockets).forEach((namespace) => {
                 sockets[namespace].disconnect();
             });
         };
-    }, [cookies, sockets]);
+    }, [sockets]);
     return (
         <Context.Provider value={[sockets, { addSocket }, io]}>
             {children}

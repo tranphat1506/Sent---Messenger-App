@@ -1,12 +1,11 @@
 import { Socket } from 'socket.io-client';
 import Context from '../contexts/socket.io/Context';
 import { useContext, useEffect } from 'react';
-const handleConnectError = (error: any) => {
+export const handleConnectError = (error: any) => {
     console.error('Socket connection error:', error);
     // Xử lý khi kết nối bị lỗi
 };
-
-const handleConnectTimeout = (timeout: any) => {
+export const handleConnectTimeout = (timeout: any) => {
     console.error('Socket connection timeout:', timeout);
     // Xử lý khi kết nối quá thời gian
 };

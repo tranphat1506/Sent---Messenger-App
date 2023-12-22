@@ -1,22 +1,24 @@
-import { ReactNode, useLayoutEffect } from 'react';
-import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { ReactNode, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import useAuthStore from '../hooks/useAuthStore';
 import { API_ENDPOINT, BE_PORT, BE_URL } from '../constant';
 import { loginUser } from '../contexts/auth/actions';
+import useFriendSocket from '../hooks/useFriendSocket';
 
 type PrivateRouteProps = {
     children?: ReactNode;
 };
-
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [authStore, dispatchAuthStore] = useAuthStore();
     const [cookies, , deleteCookie] = useCookies(['token']);
-    useLayoutEffect(() => {
+    const [friendSocket, friends] = useFriendSocket();
+    // Check auth
+    useEffect(() => {
         if (!cookies.token) {
-            return navigate('/auth', {
+            navigate('/auth', {
                 state: {
                     from: location,
                 },
@@ -48,6 +50,9 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
                 });
         }
     }, [cookies]);
+    useEffect(() => {
+        console.log(friends);
+    }, [friends]);
     return (
         <>
             {authStore?.isLogging ? (
